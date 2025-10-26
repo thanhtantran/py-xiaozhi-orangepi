@@ -1,4 +1,4 @@
-# py-xiaozhi-orangepi
+# py-xiaozhi cho thiết bị Orange Pi
 
 [English](README-en.md) | Tiếng Việt
 
@@ -7,7 +7,7 @@
 - Bản chỉnh sửa Python-based Xiaozhi AI cho ai muốn thử nghiệm Xiaozhi AI trên các thiết bị Orange Pi, có thể chạy song song cùng các MCP Server.
 - Bản chỉnh sửa này lấy gốc từ [py-xiaozhi](https://github.com/huangjunsen0406/py-xiaozhi), lược bỏ các phần không cần thiết chỉ để chạy trên Orange Pi.
 - Nếu bạn cần một bản chạy trên tất cả các thiết bị PC, MAC, v.v. thì hãy dùng bản gốc.
-- Phiên này này dùng GNU Lesser General Public License v2.1, nghĩa là nếu bạn sử dụng mã nguồn này, bạn chỉ được phép phân phối miễn phí cho người khác.
+- Phiên này này dùng GNU Lesser General Public License v2.1, nghĩa là nếu bạn sử dụng mã nguồn này, bạn chỉ được phép phân phối miễn phí cho người khác, mà không được bán.
 - Nếu bạn thấy mã nguồn này hữu ích, hãy Star cho mã nguồn, và ghé qua [Orange Pi Việt Nam](https://orangepi.vn) mua hàng ủng hộ.
 
 ## Demo
@@ -32,7 +32,7 @@
 - **Python Version**: 3.9 - 3.12
 - **Operating System**: Ubuntu / Debian
 - **Audio Devices**: Microphone and speaker devices
-- **Network Connection**: Stable internet connection (for AI services and online features)
+- **Network Connection**: Internet ổn định (để kết nối đến Xiaozhi.me)
 
 ### Yêu cầu cấu hình
 
