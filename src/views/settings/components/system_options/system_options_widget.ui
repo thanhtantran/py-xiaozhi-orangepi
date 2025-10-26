@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SystemOptionsWidget</class>
+ <widget class="QWidget" name="SystemOptionsWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>580</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Tùy chọn hệ thống</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>578</width>
+        <height>580</height>
+       </rect>
+      </property>
+      <layout class="QFormLayout" name="formLayout">
+       <property name="labelAlignment">
+        <set>Qt::AlignRight|Qt::AlignVCenter</set>
+       </property>
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::ExpandingFieldsGrow</enum>
+       </property>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_client_id">
+         <property name="text">
+          <string>ID khách hàng:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="client_id_edit"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_device_id">
+         <property name="text">
+          <string>ID thiết bị:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="device_id_edit"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_ota_url">
+         <property name="text">
+          <string>URL phiên bản OTA:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="ota_url_edit"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_websocket_url">
+         <property name="text">
+          <string>WebSocket URL:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="websocket_url_edit"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_websocket_token">
+         <property name="text">
+          <string>WebSocket Token:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="websocket_token_edit">
+         <property name="echoMode">
+          <enum>QLineEdit::Password</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_authorization_url">
+         <property name="text">
+          <string>URL ủy quyền:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="authorization_url_edit"/>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_activation_version">
+         <property name="text">
+          <string>Phiên bản kích hoạt:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QComboBox" name="activation_version_combo">
+         <item>
+          <property name="text">
+           <string>v1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>v2</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_aec_enabled">
+         <property name="text">
+          <string>Bật khử tiếng vọng AEC:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QCheckBox" name="aec_enabled_check">
+         <property name="text">
+          <string>Bật</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_window_size">
+         <property name="text">
+          <string>Kích thước giao diện:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QComboBox" name="window_size_combo">
+         <item>
+          <property name="text">
+           <string>Mặc định</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>75%</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>100%</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="9" column="0" colspan="2">
+        <widget class="QGroupBox" name="mqtt_group">
+         <property name="title">
+          <string>Cấu hình MQTT</string>
+         </property>
+         <layout class="QFormLayout" name="mqtt_form">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_mqtt_endpoint">
+            <property name="text">
+             <string>Điểm cuối:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="mqtt_endpoint_edit"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_mqtt_client_id">
+            <property name="text">
+             <string>ID khách hàng:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="mqtt_client_id_edit"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_mqtt_username">
+            <property name="text">
+             <string>Tên người dùng:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="mqtt_username_edit"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_mqtt_password">
+            <property name="text">
+             <string>Mật khẩu:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="mqtt_password_edit">
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_mqtt_publish_topic">
+            <property name="text">
+             <string>Chủ đề phát hành:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLineEdit" name="mqtt_publish_topic_edit"/>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_mqtt_subscribe_topic">
+            <property name="text">
+             <string>Chủ đề đăng ký:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLineEdit" name="mqtt_subscribe_topic_edit"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

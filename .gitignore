@@ -1,0 +1,9 @@
+/logs
+/config
+.venv
+**/__pycache__/
+xiaozhi-venv/
+.idea/
+venv/
+cache/
+models/
