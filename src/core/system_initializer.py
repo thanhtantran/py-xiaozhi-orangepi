@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-四阶段初始化流程测试脚本 展示设备身份准备、配置管理、OTA配置获取三个阶段的协调工作 激活流程由用户自己实现.
+Kịch bản kiểm tra quy trình khởi tạo bốn giai đoạn 
+Hiển thị công việc phối hợp của chuẩn bị danh tính thiết bị, quản lý cấu hình, và lấy cấu hình OTA 
+Quy trình kích hoạt do người dùng tự thực hiện.
 """
 
 import asyncio
@@ -18,7 +20,7 @@ logger = get_logger(__name__)
 
 
 class SystemInitializer:
-    """系统初始化器 - 协调四个阶段"""
+    """Trình khởi tạo hệ thống - Phối hợp bốn giai đoạn"""
 
     def __init__(self):
         self.device_fingerprint = None
@@ -27,197 +29,197 @@ class SystemInitializer:
         self.current_stage = None
         self.activation_data = None
         self.activation_status = {
-            "local_activated": False,  # 本地激活状态
-            "server_activated": False,  # 服务器激活状态
-            "status_consistent": True,  # 状态是否一致
+            "local_activated": False,  # Trạng thái kích hoạt cục bộ
+            "server_activated": False,  # Trạng thái kích hoạt trên máy chủ
+            "status_consistent": True,  # Trạng thái có nhất quán hay không
         }
 
     async def run_initialization(self) -> Dict:
-        """运行完整的初始化流程.
+        """Chạy quy trình khởi tạo hoàn chỉnh.
 
         Returns:
-            Dict: 初始化结果，包含激活状态和是否需要激活界面
+            Dict: Kết quả khởi tạo, bao gồm trạng thái kích hoạt và có cần giao diện kích hoạt hay không
         """
-        logger.info("开始系统初始化流程")
+        logger.info("Bắt đầu quy trình khởi tạo hệ thống")
 
         try:
-            # 第一阶段：设备身份准备
+            # Giai đoạn 1: Chuẩn bị danh tính thiết bị
             await self.stage_1_device_fingerprint()
 
-            # 第二阶段：配置管理初始化
+            # Giai đoạn 2: Khởi tạo quản lý cấu hình
             await self.stage_2_config_management()
 
-            # 第三阶段：OTA获取配置
+            # Giai đoạn 3: Lấy cấu hình OTA
             await self.stage_3_ota_config()
 
-            # 获取激活版本配置
+            # Lấy cấu hình phiên bản kích hoạt
             activation_version = self.config_manager.get_config(
                 "SYSTEM_OPTIONS.NETWORK.ACTIVATION_VERSION", "v1"
             )
 
-            logger.info(f"激活版本: {activation_version}")
+            logger.info(f"Phiên bản kích hoạt: {activation_version}")
 
-            # 根据激活版本决定是否需要激活流程
+            # Quyết định có cần quy trình kích hoạt hay không dựa trên phiên bản kích hoạt
             if activation_version == "v1":
-                # v1协议：完成前三个阶段后直接返回成功
-                logger.info("v1协议：前三个阶段完成，无需激活流程")
+                # Giao thức v1: Hoàn thành ba giai đoạn đầu và trả về thành công ngay
+                logger.info("Giao thức v1: Ba giai đoạn hoàn thành, không cần quy trình kích hoạt")
                 return {
                     "success": True,
                     "local_activated": True,
                     "server_activated": True,
                     "status_consistent": True,
                     "need_activation_ui": False,
-                    "status_message": "v1协议初始化完成",
+                    "status_message": "Khởi tạo giao thức v1 hoàn thành",
                     "activation_version": activation_version,
                 }
             else:
-                # v2协议：需要分析激活状态
-                logger.info("v2协议：分析激活状态")
+                # Giao thức v2: Cần phân tích trạng thái kích hoạt
+                logger.info("Giao thức v2: Phân tích trạng thái kích hoạt")
                 activation_result = self.analyze_activation_status()
                 activation_result["activation_version"] = activation_version
 
-                # 根据分析结果决定是否需要激活流程
+                # Quyết định có cần quy trình kích hoạt hay không dựa trên kết quả phân tích
                 if activation_result["need_activation_ui"]:
-                    logger.info("需要显示激活界面")
+                    logger.info("Cần hiển thị giao diện kích hoạt")
                 else:
-                    logger.info("无需显示激活界面，设备已激活")
+                    logger.info("Không cần hiển thị giao diện kích hoạt, thiết bị đã được kích hoạt")
 
                 return activation_result
 
         except Exception as e:
-            logger.error(f"系统初始化失败: {e}")
+            logger.error(f"Khởi tạo hệ thống thất bại: {e}")
             return {"success": False, "error": str(e), "need_activation_ui": False}
 
     async def stage_1_device_fingerprint(self):
         """
-        第一阶段：设备身份准备.
+        Giai đoạn 1: Chuẩn bị danh tính thiết bị.
         """
         self.current_stage = InitializationStage.DEVICE_FINGERPRINT
-        logger.info(f"开始{self.current_stage.value}")
+        logger.info(f"Bắt đầu {self.current_stage.value}")
 
-        # 初始化设备指纹
+        # Khởi tạo dấu vân tay thiết bị
         self.device_fingerprint = DeviceFingerprint.get_instance()
 
-        # 确保设备身份信息完整
+        # Đảm bảo thông tin danh tính thiết bị đầy đủ
         (
             serial_number,
             hmac_key,
             is_activated,
         ) = self.device_fingerprint.ensure_device_identity()
 
-        # 记录本地激活状态
+        # Ghi lại trạng thái kích hoạt cục bộ
         self.activation_status["local_activated"] = is_activated
 
-        # 获取MAC地址并确保小写格式
+        # Lấy địa chỉ MAC và đảm bảo định dạng chữ thường
         mac_address = self.device_fingerprint.get_mac_address_from_efuse()
 
-        logger.info(f"设备序列号: {serial_number}")
-        logger.info(f"MAC地址: {mac_address}")
-        logger.info(f"HMAC密钥: {hmac_key[:8] if hmac_key else None}...")
-        logger.info(f"本地激活状态: {'已激活' if is_activated else '未激活'}")
+        logger.info(f"Số sê-ri thiết bị: {serial_number}")
+        logger.info(f"Địa chỉ MAC: {mac_address}")
+        logger.info(f"Khóa HMAC: {hmac_key[:8] if hmac_key else None}...")
+        logger.info(f"Trạng thái kích hoạt cục bộ: {'Đã kích hoạt' if is_activated else 'Chưa kích hoạt'}")
 
-        # 验证efuse.json文件是否完整
+        # Xác minh tệp efuse.json có đầy đủ không
         efuse_file = Path("config/efuse.json")
         if efuse_file.exists():
-            logger.info(f"efuse.json文件位置: {efuse_file.absolute()}")
+            logger.info(f"Vị trí tệp efuse.json: {efuse_file.absolute()}")
             with open(efuse_file, "r", encoding="utf-8") as f:
                 efuse_data = json.load(f)
             logger.debug(
-                f"efuse.json内容: "
+                f"Nội dung efuse.json: "
                 f"{json.dumps(efuse_data, indent=2, ensure_ascii=False)}"
             )
         else:
-            logger.warning("efuse.json文件不存在")
+            logger.warning("Tệp efuse.json không tồn tại")
 
-        logger.info(f"完成{self.current_stage.value}")
+        logger.info(f"Hoàn thành {self.current_stage.value}")
 
     async def stage_2_config_management(self):
         """
-        第二阶段：配置管理初始化.
+        Giai đoạn 2: Khởi tạo quản lý cấu hình.
         """
         self.current_stage = InitializationStage.CONFIG_MANAGEMENT
-        logger.info(f"开始{self.current_stage.value}")
+        logger.info(f"Bắt đầu {self.current_stage.value}")
 
-        # 初始化配置管理器
+        # Khởi tạo quản lý cấu hình
         self.config_manager = ConfigManager.get_instance()
 
-        # 确保CLIENT_ID存在
+        # Đảm bảo CLIENT_ID tồn tại
         self.config_manager.initialize_client_id()
 
-        # 从设备指纹初始化DEVICE_ID
+        # Khởi tạo DEVICE_ID từ dấu vân tay thiết bị
         self.config_manager.initialize_device_id_from_fingerprint(
             self.device_fingerprint
         )
 
-        # 验证关键配置
+        # Xác minh cấu hình quan trọng
         client_id = self.config_manager.get_config("SYSTEM_OPTIONS.CLIENT_ID")
         device_id = self.config_manager.get_config("SYSTEM_OPTIONS.DEVICE_ID")
 
-        logger.info(f"客户端ID: {client_id}")
-        logger.info(f"设备ID: {device_id}")
+        logger.info(f"Client ID: {client_id}")
+        logger.info(f"Device ID: {device_id}")
 
-        logger.info(f"完成{self.current_stage.value}")
+        logger.info(f"Hoàn thành {self.current_stage.value}")
 
     async def stage_3_ota_config(self):
         """
-        第三阶段：OTA获取配置.
+        Giai đoạn 3: Lấy cấu hình OTA.
         """
         self.current_stage = InitializationStage.OTA_CONFIG
-        logger.info(f"开始{self.current_stage.value}")
+        logger.info(f"Bắt đầu {self.current_stage.value}")
 
-        # 初始化OTA
+        # Khởi tạo OTA
         self.ota = await Ota.get_instance()
 
-        # 获取并更新配置
+        # Lấy và cập nhật cấu hình
         try:
             config_result = await self.ota.fetch_and_update_config()
 
-            logger.info("OTA配置获取结果:")
-            mqtt_status = "已获取" if config_result["mqtt_config"] else "未获取"
-            logger.info(f"- MQTT配置: {mqtt_status}")
+            logger.info("Kết quả lấy cấu hình OTA:")
+            mqtt_status = "Đã lấy" if config_result["mqtt_config"] else "Chưa lấy"
+            logger.info(f"- Cấu hình MQTT: {mqtt_status}")
 
-            ws_status = "已获取" if config_result["websocket_config"] else "未获取"
-            logger.info(f"- WebSocket配置: {ws_status}")
+            ws_status = "Đã lấy" if config_result["websocket_config"] else "Chưa lấy"
+            logger.info(f"- Cấu hình WebSocket: {ws_status}")
 
-            # 显示获取到的配置信息摘要
+            # Hiển thị tóm tắt thông tin cấu hình đã lấy
             response_data = config_result["response_data"]
-            # 详细配置信息仅在调试模式下显示
+            # Thông tin chi tiết chỉ hiển thị trong chế độ gỡ lỗi
             logger.debug(
-                f"OTA响应数据: {json.dumps(response_data, indent=2, ensure_ascii=False)}"
+                f"Dữ liệu phản hồi OTA: {json.dumps(response_data, indent=2, ensure_ascii=False)}"
             )
 
             if "websocket" in response_data:
                 ws_info = response_data["websocket"]
                 logger.info(f"WebSocket URL: {ws_info.get('url', 'N/A')}")
 
-            # 检查是否有激活信息
+            # Kiểm tra xem có thông tin kích hoạt hay không
             if "activation" in response_data:
-                logger.info("检测到激活信息，设备需要激活")
+                logger.info("Phát hiện thông tin kích hoạt, thiết bị cần được kích hoạt")
                 self.activation_data = response_data["activation"]
-                # 服务器认为设备未激活
+                # Máy chủ cho rằng thiết bị chưa được kích hoạt
                 self.activation_status["server_activated"] = False
             else:
-                logger.info("未检测到激活信息，设备可能已激活")
+                logger.info("Không phát hiện thông tin kích hoạt, thiết bị có thể đã được kích hoạt")
                 self.activation_data = None
-                # 服务器认为设备已激活
+                # Máy chủ cho rằng thiết bị đã được kích hoạt
                 self.activation_status["server_activated"] = True
 
         except Exception as e:
-            logger.error(f"OTA配置获取失败: {e}")
+            logger.error(f"Lấy cấu hình OTA thất bại: {e}")
             raise
 
-        logger.info(f"完成{self.current_stage.value}")
+        logger.info(f"Hoàn thành {self.current_stage.value}")
 
     def analyze_activation_status(self) -> Dict:
-        """分析激活状态，决定后续流程.
+        """Phân tích trạng thái kích hoạt, quyết định quy trình tiếp theo.
 
         Returns:
-            Dict: 分析结果，包含是否需要激活界面等信息
+            Dict: Kết quả phân tích, bao gồm có cần giao diện kích hoạt hay không và thông tin khác
         """
         local_activated = self.activation_status["local_activated"]
         server_activated = self.activation_status["server_activated"]
 
-        # 检查状态是否一致
+        # Kiểm tra trạng thái có nhất quán hay không
         status_consistent = local_activated == server_activated
         self.activation_status["status_consistent"] = status_consistent
 
@@ -230,49 +232,49 @@ class SystemInitializer:
             "status_message": "",
         }
 
-        # 情况1: 本地未激活，服务器返回激活数据 - 正常激活流程
+        # Tình huống 1: Cục bộ chưa kích hoạt, máy chủ trả về dữ liệu kích hoạt - Quy trình kích hoạt bình thường
         if not local_activated and not server_activated:
             result["need_activation_ui"] = True
-            result["status_message"] = "设备需要激活"
+            result["status_message"] = "Thiết bị cần được kích hoạt"
 
-        # 情况2: 本地已激活，服务器无激活数据 - 正常已激活状态
+        # Tình huống 2: Cục bộ đã kích hoạt, máy chủ không có dữ liệu kích hoạt - Trạng thái đã kích hoạt bình thường
         elif local_activated and server_activated:
             result["need_activation_ui"] = False
-            result["status_message"] = "设备已激活"
+            result["status_message"] = "Thiết bị đã được kích hoạt"
 
-        # 情况3: 本地未激活，但服务器无激活数据 - 状态不一致，自动修复
+        # Tình huống 3: Cục bộ chưa kích hoạt, nhưng máy chủ không có dữ liệu kích hoạt - Trạng thái không nhất quán, tự động sửa chữa
         elif not local_activated and server_activated:
             logger.warning(
-                "状态不一致: 本地未激活，但服务器认为已激活，自动修复本地状态"
+                "Trạng thái không nhất quán: Cục bộ chưa kích hoạt, nhưng máy chủ cho rằng đã kích hoạt, tự động sửa chữa trạng thái cục bộ"
             )
-            # 自动更新本地状态为已激活
+            # Tự động cập nhật trạng thái cục bộ thành đã kích hoạt
             self.device_fingerprint.set_activation_status(True)
             result["need_activation_ui"] = False
-            result["status_message"] = "已自动修复激活状态"
-            result["local_activated"] = True  # 更新结果中的状态
+            result["status_message"] = "Đã tự động sửa chữa trạng thái kích hoạt"
+            result["local_activated"] = True  # Cập nhật trạng thái trong kết quả
 
-        # 情况4: 本地已激活，但服务器返回激活数据 - 状态不一致，尝试自动修复
+        # Tình huống 4: Cục bộ đã kích hoạt, nhưng máy chủ trả về dữ liệu kích hoạt - Trạng thái không nhất quán, cố gắng tự động sửa chữa
         elif local_activated and not server_activated:
-            logger.warning("状态不一致: 本地已激活，但服务器认为未激活，尝试自动修复")
+            logger.warning("Trạng thái không nhất quán: Cục bộ đã kích hoạt, nhưng máy chủ cho rằng chưa kích hoạt, cố gắng tự động sửa chữa")
 
-            # 检查是否有激活数据
+            # Kiểm tra xem có dữ liệu kích hoạt hay không
             if self.activation_data and isinstance(self.activation_data, dict):
-                # 如果有激活码，则需要重新激活
+                # Nếu có mã kích hoạt, cần kích hoạt lại
                 if "code" in self.activation_data:
-                    logger.info("服务器返回了激活码，需要重新激活")
+                    logger.info("Máy chủ đã trả về mã kích hoạt, cần kích hoạt lại")
                     result["need_activation_ui"] = True
-                    result["status_message"] = "激活状态不一致，需要重新激活"
+                    result["status_message"] = "Trạng thái kích hoạt không nhất quán, cần kích hoạt lại"
                 else:
-                    # 没有激活码，可能是服务器状态未更新，尝试继续使用
-                    logger.info("服务器未返回激活码，保持本地激活状态")
+                    # Không có mã kích hoạt, có thể là trạng thái máy chủ chưa được cập nhật, cố gắng tiếp tục sử dụng
+                    logger.info("Máy chủ không trả về mã kích hoạt, giữ trạng thái cục bộ đã kích hoạt")
                     result["need_activation_ui"] = False
-                    result["status_message"] = "保持本地激活状态"
+                    result["status_message"] = "Giữ trạng thái cục bộ đã kích hoạt"
             else:
-                # 没有激活数据，可能是网络问题，保持本地状态
-                logger.info("未获取到激活数据，保持本地激活状态")
+                # Không có dữ liệu kích hoạt, có thể là sự cố mạng, giữ trạng thái cục bộ
+                logger.info("Không lấy được dữ liệu kích hoạt, giữ trạng thái cục bộ đã kích hoạt")
                 result["need_activation_ui"] = False
-                result["status_message"] = "保持本地激活状态"
-                # 强制更新状态一致性，避免重复激活
+                result["status_message"] = "Giữ trạng thái cục bộ đã kích hoạt"
+                # Cưỡng chế cập nhật trạng thái nhất quán, tránh kích hoạt lại
                 result["status_consistent"] = True
                 self.activation_status["status_consistent"] = True
                 self.activation_status["server_activated"] = True
@@ -281,41 +283,41 @@ class SystemInitializer:
 
     def get_activation_data(self):
         """
-        获取激活数据（供激活模块使用）
+        Lấy dữ liệu kích hoạt (để sử dụng trong mô-đun kích hoạt)
         """
         return getattr(self, "activation_data", None)
 
     def get_device_fingerprint(self):
         """
-        获取设备指纹实例.
+        Lấy thể hiện dấu vân tay thiết bị.
         """
         return self.device_fingerprint
 
     def get_config_manager(self):
         """
-        获取配置管理器实例.
+        Lấy thể hiện quản lý cấu hình.
         """
         return self.config_manager
 
     def get_activation_status(self) -> Dict:
         """
-        获取激活状态信息.
+        Lấy thông tin trạng thái kích hoạt.
         """
         return self.activation_status
 
     async def handle_activation_process(self, mode: str = "gui") -> Dict:
-        """处理激活流程，根据需要创建激活界面.
+        """Xử lý quy trình kích hoạt, tạo giao diện kích hoạt nếu cần.
 
         Args:
-            mode: 界面模式，"gui"或"cli"
+            mode: Chế độ giao diện, "gui" hoặc "cli"
 
         Returns:
-            Dict: 激活结果
+            Dict: Kết quả kích hoạt
         """
-        # 先运行初始化流程
+        # Chạy quy trình khởi tạo trước
         init_result = await self.run_initialization()
 
-        # 如果不需要激活界面，直接返回结果
+        # Nếu không cần giao diện kích hoạt, trả về kết quả ngay
         if not init_result.get("need_activation_ui", False):
             return {
                 "is_activated": True,
@@ -323,48 +325,48 @@ class SystemInitializer:
                 "config_manager": self.config_manager,
             }
 
-        # 需要激活界面，根据模式创建
+        # Cần giao diện kích hoạt, tạo theo chế độ
         if mode == "gui":
             return await self._run_gui_activation()
         else:
             return await self._run_cli_activation()
 
     async def _run_gui_activation(self) -> Dict:
-        """运行GUI激活流程.
+        """Chạy quy trình kích hoạt GUI.
 
         Returns:
-            Dict: 激活结果
+            Dict: Kết quả kích hoạt
         """
         try:
             from src.views.activation.activation_window import ActivationWindow
 
-            # 创建激活窗口
+            # Tạo cửa sổ kích hoạt
             activation_window = ActivationWindow(self)
 
-            # 创建Future来等待激活完成
+            # Tạo Future để chờ kích hoạt hoàn thành
             activation_future = asyncio.Future()
 
-            # 设置激活完成回调
+            # Thiết lập callback khi kích hoạt hoàn thành
             def on_activation_completed(success: bool):
                 if not activation_future.done():
                     activation_future.set_result(success)
 
-            # 设置窗口关闭回调
+            # Thiết lập callback khi cửa sổ đóng
             def on_window_closed():
                 if not activation_future.done():
                     activation_future.set_result(False)
 
-            # 连接信号
+            # Kết nối tín hiệu
             activation_window.activation_completed.connect(on_activation_completed)
             activation_window.window_closed.connect(on_window_closed)
 
-            # 显示激活窗口
+            # Hiển thị cửa sổ kích hoạt
             activation_window.show()
 
-            # 等待激活完成
+            # Chờ kích hoạt hoàn thành
             activation_success = await activation_future
 
-            # 关闭窗口
+            # Đóng cửa sổ
             activation_window.close()
 
             return {
@@ -374,22 +376,22 @@ class SystemInitializer:
             }
 
         except Exception as e:
-            logger.error(f"GUI激活流程异常: {e}", exc_info=True)
+            logger.error(f"Quy trình kích hoạt GUI xảy ra ngoại lệ: {e}", exc_info=True)
             return {"is_activated": False, "error": str(e)}
 
     async def _run_cli_activation(self) -> Dict:
-        """运行CLI激活流程.
+        """Chạy quy trình kích hoạt CLI.
 
         Returns:
-            Dict: 激活结果
+            Dict: Kết quả kích hoạt
         """
         try:
             from src.views.activation.cli_activation import CLIActivation
 
-            # 创建CLI激活处理器
+            # Tạo trình xử lý kích hoạt CLI
             cli_activation = CLIActivation(self)
 
-            # 运行激活流程
+            # Chạy quy trình kích hoạt
             activation_success = await cli_activation.run_activation_process()
 
             return {
@@ -399,5 +401,5 @@ class SystemInitializer:
             }
 
         except Exception as e:
-            logger.error(f"CLI激活流程异常: {e}", exc_info=True)
+            logger.error(f"Quy trình kích hoạt CLI xảy ra ngoại lệ: {e}", exc_info=True)
             return {"is_activated": False, "error": str(e)}
