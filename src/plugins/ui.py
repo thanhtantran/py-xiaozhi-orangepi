@@ -11,8 +11,8 @@ class UIPlugin(Plugin):
 
     # Bản đồ văn bản trạng thái thiết bị
     STATE_TEXT_MAP = {
-        DeviceState.IDLE: "Chờ đợi",
-        DeviceState.LISTENING: "Đang lắng nghe...",
+        DeviceState.IDLE: "Đang đợi",
+        DeviceState.LISTENING: "Đang nghe...",
         DeviceState.SPEAKING: "Đang nói...",
     }
 
