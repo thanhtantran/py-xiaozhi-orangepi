@@ -77,7 +77,7 @@ class SettingsWindow(QDialog):
 
             # Tạo và thêm component tùy chọn hệ thống
             self.system_options_tab = SystemOptionsWidget()
-            tab_widget.addTab(self.system_options_tab, "Tùy chọn system")
+            tab_widget.addTab(self.system_options_tab, "Tùy chọn")
             self.system_options_tab.settings_changed.connect(self._on_settings_changed)
 
             # Tạo và thêm component từ đánh thức

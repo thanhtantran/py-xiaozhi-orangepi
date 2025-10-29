@@ -23,10 +23,10 @@ from src.utils.logging_config import get_logger
 
 class CameraWidget(QWidget):
     """
-    摄像头设置组件.
+    Thành phần cài đặt camera.
     """
 
-    # 信号定义
+    # Định nghĩa tín hiệu
     settings_changed = pyqtSignal()
 
     def __init__(self, parent=None):
@@ -34,23 +34,23 @@ class CameraWidget(QWidget):
         self.logger = get_logger(__name__)
         self.config_manager = ConfigManager.get_instance()
 
-        # UI控件引用
+        # Tham chiếu đến các điều khiển UI
         self.ui_controls = {}
 
-        # 预览相关
+        # Liên quan đến xem trước
         self.camera = None
         self.preview_timer = QTimer()
         self.preview_timer.timeout.connect(self._update_preview_frame)
         self.is_previewing = False
 
-        # 初始化UI
+        # Khởi tạo UI
         self._setup_ui()
         self._connect_events()
         self._load_config_values()
 
     def _setup_ui(self):
         """
-        设置UI界面.
+        Thiết lập giao diện UI.
         """
         try:
             from PyQt5 import uic
@@ -58,16 +58,16 @@ class CameraWidget(QWidget):
             ui_path = Path(__file__).parent / "camera_widget.ui"
             uic.loadUi(str(ui_path), self)
 
-            # 获取UI控件引用
+            # Lấy tham chiếu đến các điều khiển UI
             self._get_ui_controls()
 
         except Exception as e:
-            self.logger.error(f"设置摄像头UI失败: {e}", exc_info=True)
+            self.logger.error(f"Thiết lập UI camera thất bại: {e}", exc_info=True)
             raise
 
     def _get_ui_controls(self):
         """
-        获取UI控件引用.
+        Lấy tham chiếu đến các điều khiển UI.
         """
         self.ui_controls.update(
             {
@@ -79,7 +79,7 @@ class CameraWidget(QWidget):
                 "vl_api_key_edit": self.findChild(QLineEdit, "vl_api_key_edit"),
                 "models_edit": self.findChild(QLineEdit, "models_edit"),
                 "scan_camera_btn": self.findChild(QPushButton, "scan_camera_btn"),
-                # 预览相关控件
+                # Các điều khiển liên quan đến xem trước
                 "preview_label": self.findChild(QLabel, "preview_label"),
                 "start_preview_btn": self.findChild(QPushButton, "start_preview_btn"),
                 "stop_preview_btn": self.findChild(QPushButton, "stop_preview_btn"),
@@ -88,26 +88,26 @@ class CameraWidget(QWidget):
 
     def _connect_events(self):
         """
-        连接事件处理.
+        Kết nối xử lý sự kiện.
         """
-        # 为所有输入控件连接变更信号
+        # Kết nối tín hiệu thay đổi cho tất cả các điều khiển đầu vào
         for control in self.ui_controls.values():
             if isinstance(control, QLineEdit):
                 control.textChanged.connect(self.settings_changed.emit)
             elif isinstance(control, QSpinBox):
                 if control == self.ui_controls.get("camera_index_spin"):
-                    # 摄像头索引变化时，自动更新预览
+                    # Khi chỉ số camera thay đổi, tự động cập nhật xem trước
                     control.valueChanged.connect(self._on_camera_index_changed)
                 else:
                     control.valueChanged.connect(self.settings_changed.emit)
             elif isinstance(control, QPushButton):
                 continue
 
-        # 摄像头扫描按钮
+        # Nút quét camera
         if self.ui_controls["scan_camera_btn"]:
             self.ui_controls["scan_camera_btn"].clicked.connect(self._on_scan_camera)
 
-        # 预览控制按钮
+        # Nút điều khiển xem trước
         if self.ui_controls["start_preview_btn"]:
             self.ui_controls["start_preview_btn"].clicked.connect(self._start_preview)
 
@@ -116,10 +116,10 @@ class CameraWidget(QWidget):
 
     def _load_config_values(self):
         """
-        从配置文件加载值到UI控件.
+        Tải giá trị từ tệp cấu hình vào các điều khiển UI.
         """
         try:
-            # 摄像头配置
+            # Cấu hình camera
             camera_config = self.config_manager.get_config("CAMERA", {})
             self._set_spin_value(
                 "camera_index_spin", camera_config.get("camera_index", 0)
@@ -138,11 +138,11 @@ class CameraWidget(QWidget):
             self._set_text_value("models_edit", camera_config.get("models", ""))
 
         except Exception as e:
-            self.logger.error(f"加载摄像头配置值失败: {e}", exc_info=True)
+            self.logger.error(f"Tải giá trị cấu hình camera thất bại: {e}", exc_info=True)
 
     def _set_text_value(self, control_name: str, value: str):
         """
-        设置文本控件的值.
+        Thiết lập giá trị cho điều khiển văn bản.
         """
         control = self.ui_controls.get(control_name)
         if control and hasattr(control, "setText"):
@@ -150,7 +150,7 @@ class CameraWidget(QWidget):
 
     def _set_spin_value(self, control_name: str, value: int):
         """
-        设置数字控件的值.
+        Thiết lập giá trị cho điều khiển số.
         """
         control = self.ui_controls.get(control_name)
         if control and hasattr(control, "setValue"):
@@ -158,7 +158,7 @@ class CameraWidget(QWidget):
 
     def _get_text_value(self, control_name: str) -> str:
         """
-        获取文本控件的值.
+        Lấy giá trị từ điều khiển văn bản.
         """
         control = self.ui_controls.get(control_name)
         if control and hasattr(control, "text"):
@@ -167,7 +167,7 @@ class CameraWidget(QWidget):
 
     def _get_spin_value(self, control_name: str) -> int:
         """
-        获取数字控件的值.
+        Lấy giá trị từ điều khiển số.
         """
         control = self.ui_controls.get(control_name)
         if control and hasattr(control, "value"):
@@ -176,123 +176,123 @@ class CameraWidget(QWidget):
 
     def _on_scan_camera(self):
         """
-        扫描摄像头按钮点击事件.
+        Xử lý sự kiện khi nút quét camera được nhấn.
         """
         try:
-            # 停止当前预览（避免占用摄像头）
+            # Dừng xem trước hiện tại (tránh chiếm dụng camera)
             was_previewing = self.is_previewing
             if self.is_previewing:
                 self._stop_preview()
 
-            # 扫描可用摄像头
+            # Quét các camera có sẵn
             available_cameras = self._scan_available_cameras()
 
             if not available_cameras:
                 QMessageBox.information(
                     self,
-                    "扫描结果",
-                    "未检测到可用的摄像头设备。\n"
-                    "请确保摄像头已连接并且没有被其他程序占用。",
+                    "Kết quả quét",
+                    "Không phát hiện thiết bị camera có sẵn.\n"
+                    "Vui lòng đảm bảo camera đã được kết nối và không bị chiếm dụng bởi chương trình khác.",
                 )
                 return
 
-            # 如果只有一个摄像头，直接使用
+            # Nếu chỉ có một camera, sử dụng ngay
             if len(available_cameras) == 1:
                 camera = available_cameras[0]
                 self._apply_camera_settings(camera)
                 QMessageBox.information(
                     self,
-                    "设置完成",
-                    f"检测到1个摄像头，已自动设置:\n"
-                    f"索引: {camera[0]}, 分辨率: {camera[1]}x{camera[2]}",
+                    "Cài đặt hoàn tất",
+                    f"Phát hiện 1 camera, đã tự động thiết lập:\n"
+                    f"Chỉ số: {camera[0]}, Độ phân giải: {camera[1]}x{camera[2]}",
                 )
             else:
-                # 多个摄像头时显示选择对话框
+                # Nếu có nhiều camera, hiển thị hộp thoại chọn
                 selected_camera = self._show_camera_selection_dialog(available_cameras)
                 if selected_camera:
                     self._apply_camera_settings(selected_camera)
                     QMessageBox.information(
                         self,
-                        "设置完成",
-                        f"已设置摄像头:\n"
-                        f"索引: {selected_camera[0]}, 分辨率: {selected_camera[1]}x{selected_camera[2]}",
+                        "Cài đặt hoàn tất",
+                        f"Đã thiết lập camera:\n"
+                        f"Chỉ số: {selected_camera[0]}, Độ phân giải: {selected_camera[1]}x{selected_camera[2]}",
                     )
 
-            # 恢复预览状态
+            # Khôi phục trạng thái xem trước
             if was_previewing:
                 QTimer.singleShot(500, self._start_preview)
 
         except Exception as e:
-            self.logger.error(f"扫描摄像头失败: {e}", exc_info=True)
-            QMessageBox.warning(self, "错误", f"扫描摄像头时发生错误: {str(e)}")
+            self.logger.error(f"Quét camera thất bại: {e}", exc_info=True)
+            QMessageBox.warning(self, "Lỗi", f"Đã xảy ra lỗi khi quét camera: {str(e)}")
 
     def _scan_available_cameras(self, max_devices: int = 5):
         """
-        扫描可用的摄像头设备.
+        Quét các thiết bị camera có sẵn.
         """
         available_cameras = []
 
         try:
             for i in range(max_devices):
                 try:
-                    # 尝试打开摄像头
+                    # Thử mở camera
                     cap = cv2.VideoCapture(i)
 
                     if cap.isOpened():
-                        # 尝试读取一帧以验证摄像头工作
+                        # Thử đọc một khung để xác minh camera hoạt động
                         ret, _ = cap.read()
                         if ret:
-                            # 获取默认分辨率
+                            # Lấy độ phân giải mặc định
                             width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
                             height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
                             available_cameras.append((i, width, height))
 
-                            self.logger.info(f"检测到摄像头 {i}: {width}x{height}")
+                            self.logger.info(f"Phát hiện camera {i}: {width}x{height}")
 
                     cap.release()
 
                 except Exception as e:
-                    self.logger.debug(f"检测摄像头 {i} 时出错: {e}")
+                    self.logger.debug(f"Lỗi khi phát hiện camera {i}: {e}")
                     continue
 
         except Exception as e:
-            self.logger.error(f"扫描摄像头过程出错: {e}", exc_info=True)
+            self.logger.error(f"Lỗi trong quá trình quét camera: {e}", exc_info=True)
 
         return available_cameras
 
     def _show_camera_selection_dialog(self, available_cameras):
         """
-        显示摄像头选择对话框.
+        Hiển thị hộp thoại chọn camera.
         """
         try:
             dialog = QDialog(self)
-            dialog.setWindowTitle("选择摄像头")
+            dialog.setWindowTitle("Chọn camera")
             dialog.setFixedSize(400, 300)
 
             layout = QVBoxLayout(dialog)
 
-            # 标题标签
+            # Nhãn tiêu đề
             title_label = QLabel(
-                f"检测到 {len(available_cameras)} 个可用摄像头，请选择一个:"
+                f"Phát hiện {len(available_cameras)} camera có sẵn, vui lòng chọn một:"
             )
             title_label.setStyleSheet("font-weight: bold; margin-bottom: 10px;")
             layout.addWidget(title_label)
 
-            # 摄像头列表
+            # Danh sách camera
             camera_list = QListWidget()
             for idx, width, height in available_cameras:
-                item_text = f"索引 {idx}: 分辨率 {width}x{height}"
+                item_text = f"Chỉ số {idx}: Độ phân giải {width}x{height}"
                 item = QListWidgetItem(item_text)
-                item.setData(Qt.UserRole, (idx, width, height))  # 存储摄像头数据
+                item.setData(Qt.UserRole, (idx, width, height))  # Lưu trữ dữ liệu camera
                 camera_list.addItem(item)
 
-            # 默认选择第一个
+            # Mặc định chọn camera đầu tiên
             if camera_list.count() > 0:
                 camera_list.setCurrentRow(0)
 
             layout.addWidget(camera_list)
 
-            # 按钮
+            # Nút
             button_box = QDialogButtonBox(
                 QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal
             )
@@ -300,7 +300,7 @@ class CameraWidget(QWidget):
             button_box.rejected.connect(dialog.reject)
             layout.addWidget(button_box)
 
-            # 显示对话框
+            # Hiển thị hộp thoại
             if dialog.exec_() == QDialog.Accepted:
                 current_item = camera_list.currentItem()
                 if current_item:
@@ -309,12 +309,12 @@ class CameraWidget(QWidget):
             return None
 
         except Exception as e:
-            self.logger.error(f"显示摄像头选择对话框失败: {e}", exc_info=True)
+            self.logger.error(f"Hiển thị hộp thoại chọn camera thất bại: {e}", exc_info=True)
             return None
 
     def _apply_camera_settings(self, camera_data):
         """
-        应用摄像头设置.
+        Áp dụng cài đặt camera.
         """
         try:
             idx, width, height = camera_data
@@ -322,19 +322,19 @@ class CameraWidget(QWidget):
             self._set_spin_value("frame_width_spin", width)
             self._set_spin_value("frame_height_spin", height)
 
-            self.logger.info(f"应用摄像头设置: 索引{idx}, {width}x{height}")
+            self.logger.info(f"Áp dụng cài đặt camera: Chỉ số {idx}, {width}x{height}")
 
         except Exception as e:
-            self.logger.error(f"应用摄像头设置失败: {e}", exc_info=True)
+            self.logger.error(f"Áp dụng cài đặt camera thất bại: {e}", exc_info=True)
 
     def get_config_data(self) -> dict:
         """
-        获取当前配置数据.
+        Lấy dữ liệu cấu hình hiện tại.
         """
         config_data = {}
 
         try:
-            # 摄像头配置
+            # Cấu hình camera
             camera_config = {}
             camera_config["camera_index"] = self._get_spin_value("camera_index_spin")
             camera_config["frame_width"] = self._get_spin_value("frame_width_spin")
@@ -353,25 +353,25 @@ class CameraWidget(QWidget):
             if models:
                 camera_config["models"] = models
 
-            # 获取现有的摄像头配置并更新
+            # Lấy cấu hình camera hiện tại và cập nhật
             existing_camera = self.config_manager.get_config("CAMERA", {})
             existing_camera.update(camera_config)
             config_data["CAMERA"] = existing_camera
 
         except Exception as e:
-            self.logger.error(f"获取摄像头配置数据失败: {e}", exc_info=True)
+            self.logger.error(f"Lấy dữ liệu cấu hình camera thất bại: {e}", exc_info=True)
 
         return config_data
 
     def reset_to_defaults(self):
         """
-        重置为默认值.
+        Đặt lại về giá trị mặc định.
         """
         try:
-            # 获取默认配置
+            # Lấy cấu hình mặc định
             default_config = ConfigManager.DEFAULT_CONFIG
 
-            # 摄像头配置
+            # Cấu hình camera
             camera_config = default_config["CAMERA"]
             self._set_spin_value("camera_index_spin", camera_config["camera_index"])
             self._set_spin_value("frame_width_spin", camera_config["frame_width"])
@@ -381,116 +381,116 @@ class CameraWidget(QWidget):
             self._set_text_value("vl_api_key_edit", camera_config["VLapi_key"])
             self._set_text_value("models_edit", camera_config["models"])
 
-            self.logger.info("摄像头配置已重置为默认值")
+            self.logger.info("Cấu hình camera đã được đặt lại về giá trị mặc định")
 
         except Exception as e:
-            self.logger.error(f"重置摄像头配置失败: {e}", exc_info=True)
+            self.logger.error(f"Đặt lại cấu hình camera thất bại: {e}", exc_info=True)
 
     def _on_camera_index_changed(self):
         """
-        摄像头索引变化事件处理.
+        Xử lý sự kiện khi chỉ số camera thay đổi.
         """
         try:
-            # 发出设置变更信号
+            # Phát tín hiệu thay đổi cài đặt
             self.settings_changed.emit()
 
-            # 如果当前正在预览，重启预览
+            # Nếu hiện đang xem trước, khởi động lại xem trước
             if self.is_previewing:
                 self._restart_preview()
 
         except Exception as e:
-            self.logger.error(f"处理摄像头索引变化失败: {e}", exc_info=True)
+            self.logger.error(f"Xử lý thay đổi chỉ số camera thất bại: {e}", exc_info=True)
 
     def _start_preview(self):
         """
-        开始预览摄像头.
+        Bắt đầu xem trước camera.
         """
         try:
             if self.is_previewing:
                 self._stop_preview()
 
-            # 获取摄像头参数
+            # Lấy tham số camera
             camera_index = self._get_spin_value("camera_index_spin")
             width = self._get_spin_value("frame_width_spin")
             height = self._get_spin_value("frame_height_spin")
             fps = self._get_spin_value("fps_spin")
 
-            # 初始化摄像头
+            # Khởi tạo camera
             self.camera = cv2.VideoCapture(camera_index)
 
             if not self.camera.isOpened():
-                self._show_preview_error(f"无法打开摄像头索引 {camera_index}")
+                self._show_preview_error(f"Không thể mở camera chỉ số {camera_index}")
                 return
 
-            # 设置摄像头参数
+            # Thiết lập tham số camera
             self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, width)
             self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
             self.camera.set(cv2.CAP_PROP_FPS, fps)
 
-            # 验证摄像头是否能正常读取
+            # Kiểm tra xem camera có thể đọc được không
             ret, _ = self.camera.read()
             if not ret:
-                self._show_preview_error("摄像头无法读取画面")
+                self._show_preview_error("Camera không thể đọc hình ảnh")
                 self.camera.release()
                 self.camera = None
                 return
 
-            # 开始预览
+            # Bắt đầu xem trước
             self.is_previewing = True
             self.preview_timer.start(max(1, int(1000 / fps)))
 
-            # 更新按钮状态
+            # Cập nhật trạng thái nút
             self._update_preview_buttons(True)
 
-            self.logger.info(f"开始预览摄像头 {camera_index}")
+            self.logger.info(f"Bắt đầu xem trước camera {camera_index}")
 
         except Exception as e:
-            self.logger.error(f"启动摄像头预览失败: {e}", exc_info=True)
-            self._show_preview_error(f"启动预览时发生错误: {str(e)}")
+            self.logger.error(f"Khởi động xem trước camera thất bại: {e}", exc_info=True)
+            self._show_preview_error(f"Đã xảy ra lỗi khi khởi động xem trước: {str(e)}")
             self._cleanup_camera()
 
     def _stop_preview(self):
         """
-        停止预览摄像头.
+        Dừng xem trước camera.
         """
         try:
             if not self.is_previewing:
                 return
 
-            # 停止定时器
+            # Dừng bộ hẹn giờ
             self.preview_timer.stop()
             self.is_previewing = False
 
-            # 释放摄像头
+            # Giải phóng camera
             self._cleanup_camera()
 
-            # 清空预览显示
+            # Xóa hiển thị xem trước
             if self.ui_controls["preview_label"]:
                 self.ui_controls["preview_label"].setText(
-                    "摄像头预览区域\n点击开始预览查看摄像头画面"
+                    "Khu vực xem trước camera\nNhấn để bắt đầu xem trước hình ảnh camera"
                 )
                 self.ui_controls["preview_label"].setPixmap(QPixmap())
 
-            # 更新按钮状态
+            # Cập nhật trạng thái nút
             self._update_preview_buttons(False)
 
-            self.logger.info("停止摄像头预览")
+            self.logger.info("Dừng xem trước camera")
 
         except Exception as e:
-            self.logger.error(f"停止摄像头预览失败: {e}", exc_info=True)
+            self.logger.error(f"Dừng xem trước camera thất bại: {e}", exc_info=True)
 
     def _restart_preview(self):
         """
-        重启预览（摄像头参数变更时调用）.
+        Khởi động lại xem trước (gọi khi tham số camera thay đổi).
         """
         if self.is_previewing:
             self._stop_preview()
-            # 稍微延迟后重启，确保摄像头资源释放
+            # Đợi một chút rồi khởi động lại, đảm bảo tài nguyên camera được giải phóng
             QTimer.singleShot(100, self._start_preview)
 
     def _update_preview_frame(self):
         """
-        更新预览帧.
+        Cập nhật khung hình xem trước.
         """
         try:
             if not self.camera or not self.camera.isOpened():
@@ -498,39 +498,39 @@ class CameraWidget(QWidget):
 
             ret, frame = self.camera.read()
             if not ret:
-                self._show_preview_error("无法读取摄像头画面")
+                self._show_preview_error("Không thể đọc hình ảnh từ camera")
                 return
 
-            # 转换颜色空间 BGR -> RGB
+            # Chuyển đổi không gian màu BGR -> RGB
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            # 获取帧尺寸
+            # Lấy kích thước khung hình
             h, w, ch = rgb_frame.shape
             bytes_per_line = ch * w
 
-            # 转换为QImage
+            # Chuyển đổi thành QImage
             qt_image = QImage(
                 rgb_frame.data, w, h, bytes_per_line, QImage.Format_RGB888
             )
 
-            # 缩放到预览标签大小
+            # Thu nhỏ đến kích thước nhãn xem trước
             if self.ui_controls["preview_label"]:
                 label_size = self.ui_controls["preview_label"].size()
                 scaled_image = qt_image.scaled(
                     label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation
                 )
 
-                # 转换为QPixmap并显示
+                # Chuyển đổi thành QPixmap và hiển thị
                 pixmap = QPixmap.fromImage(scaled_image)
                 self.ui_controls["preview_label"].setPixmap(pixmap)
 
         except Exception as e:
-            self.logger.error(f"更新预览帧失败: {e}", exc_info=True)
-            self._show_preview_error(f"显示画面出错: {str(e)}")
+            self.logger.error(f"Cập nhật khung hình xem trước thất bại: {e}", exc_info=True)
+            self._show_preview_error(f"Đã xảy ra lỗi khi hiển thị hình ảnh: {str(e)}")
 
     def _update_preview_buttons(self, is_previewing: bool):
         """
-        更新预览按钮状态.
+        Cập nhật trạng thái nút xem trước.
         """
         try:
             if self.ui_controls["start_preview_btn"]:
@@ -540,36 +540,36 @@ class CameraWidget(QWidget):
                 self.ui_controls["stop_preview_btn"].setEnabled(is_previewing)
 
         except Exception as e:
-            self.logger.error(f"更新预览按钮状态失败: {e}", exc_info=True)
+            self.logger.error(f"Cập nhật trạng thái nút xem trước thất bại: {e}", exc_info=True)
 
     def _show_preview_error(self, message: str):
         """
-        在预览区域显示错误信息.
+        Hiển thị thông báo lỗi trong khu vực xem trước.
         """
         try:
             if self.ui_controls["preview_label"]:
-                self.ui_controls["preview_label"].setText(f"预览错误:\n{message}")
+                self.ui_controls["preview_label"].setText(f"Lỗi xem trước:\n{message}")
                 self.ui_controls["preview_label"].setPixmap(QPixmap())
         except Exception as e:
-            self.logger.error(f"显示预览错误失败: {e}", exc_info=True)
+            self.logger.error(f"Hiển thị lỗi xem trước thất bại: {e}", exc_info=True)
 
     def _cleanup_camera(self):
         """
-        清理摄像头资源.
+        Dọn dẹp tài nguyên camera.
         """
         try:
             if self.camera:
                 self.camera.release()
                 self.camera = None
         except Exception as e:
-            self.logger.error(f"清理摄像头资源失败: {e}", exc_info=True)
+            self.logger.error(f"Dọn dẹp tài nguyên camera thất bại: {e}", exc_info=True)
 
     def closeEvent(self, event):
         """
-        组件关闭时清理资源.
+        Dọn dẹp tài nguyên khi thành phần đóng.
         """
         try:
             self._stop_preview()
         except Exception as e:
-            self.logger.error(f"关闭摄像头组件失败: {e}", exc_info=True)
+            self.logger.error(f"Đóng thành phần camera thất bại: {e}", exc_info=True)
         super().closeEvent(event)

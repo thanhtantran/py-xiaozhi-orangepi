@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Cấu hình tham số</string>
+   <string>SettingsWindow</string>
   </property>
   <property name="modal">
    <bool>true</bool>
