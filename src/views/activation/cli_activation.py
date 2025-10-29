@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-CLI模式设备激活流程 提供与GUI激活窗口相同的功能，但使用纯终端输出.
+Quy trình kích hoạt thiết bị CLI cung cấp chức năng tương tự như cửa sổ kích hoạt GUI, nhưng sử dụng đầu ra thuần túy trên terminal.
 """
 
 from datetime import datetime
@@ -15,15 +15,15 @@ logger = get_logger(__name__)
 
 class CLIActivation:
     """
-    CLI模式设备激活处理器.
+    Bộ xử lý kích hoạt thiết bị CLI.
     """
 
     def __init__(self, system_initializer: Optional[SystemInitializer] = None):
-        # 组件实例
+        # Thể hiện thành phần
         self.system_initializer = system_initializer
         self.device_activator: Optional[DeviceActivator] = None
 
-        # 状态管理
+        # Quản lý trạng thái
         self.current_stage = None
         self.activation_data = None
         self.is_activated = False
@@ -31,69 +31,69 @@ class CLIActivation:
         self.logger = logger
 
     async def run_activation_process(self) -> bool:
-        """运行完整的CLI激活流程.
+        """Chạy quy trình kích hoạt CLI đầy đủ.
 
         Returns:
-            bool: 激活是否成功
+            bool: Kích hoạt có thành công hay không
         """
         try:
             self._print_header()
 
-            # 如果已经提供了SystemInitializer实例，直接使用
+            # Nếu đã cung cấp thể hiện SystemInitializer, sử dụng ngay
             if self.system_initializer:
-                self._log_and_print("使用已初始化的系统")
+                self._log_and_print("Sử dụng hệ thống đã được khởi tạo")
                 self._update_device_info()
                 return await self._start_activation_process()
             else:
-                # 否则创建新的实例并运行初始化
-                self._log_and_print("开始系统初始化流程")
+                # Nếu không, tạo thể hiện mới và chạy khởi tạo
+                self._log_and_print("Bắt đầu quy trình khởi tạo hệ thống")
                 self.system_initializer = SystemInitializer()
 
-                # 运行初始化流程
+                # Chạy quy trình khởi tạo
                 init_result = await self.system_initializer.run_initialization()
 
                 if init_result.get("success", False):
                     self._update_device_info()
 
-                    # 显示状态消息
+                    # Hiển thị thông điệp trạng thái
                     status_message = init_result.get("status_message", "")
                     if status_message:
                         self._log_and_print(status_message)
 
-                    # 检查是否需要激活
+                    # Kiểm tra xem có cần kích hoạt không
                     if init_result.get("need_activation_ui", True):
                         return await self._start_activation_process()
                     else:
-                        # 无需激活，直接完成
+                        # Không cần kích hoạt, hoàn thành ngay
                         self.is_activated = True
-                        self._log_and_print("设备已激活，无需进一步操作")
+                        self._log_and_print("Thiết bị đã được kích hoạt, không cần thao tác thêm")
                         return True
                 else:
-                    error_msg = init_result.get("error", "初始化失败")
-                    self._log_and_print(f"错误: {error_msg}")
+                    error_msg = init_result.get("error", "Khởi tạo thất bại")
+                    self._log_and_print(f"Lỗi: {error_msg}")
                     return False
 
         except KeyboardInterrupt:
-            self._log_and_print("\n用户中断激活流程")
+            self._log_and_print("\nNgười dùng đã ngắt quy trình kích hoạt")
             return False
         except Exception as e:
-            self.logger.error(f"CLI激活过程异常: {e}", exc_info=True)
-            self._log_and_print(f"激活异常: {e}")
+            self.logger.error(f"Có ngoại lệ trong quy trình kích hoạt CLI: {e}", exc_info=True)
+            self._log_and_print(f"Có ngoại lệ trong kích hoạt: {e}")
             return False
 
     def _print_header(self):
         """
-        打印CLI激活流程头部信息.
+        In thông tin đầu của quy trình kích hoạt CLI.
         """
         print("\n" + "=" * 60)
-        print("小智AI客户端 - 设备激活流程")
+        print("Khách hàng AI nhỏ - Quy trình kích hoạt thiết bị")
         print("=" * 60)
-        print("正在初始化设备，请稍候...")
+        print("Đang khởi tạo thiết bị, vui lòng chờ...")
         print()
 
     def _update_device_info(self):
         """
-        更新设备信息显示.
+        Cập nhật hiển thị thông tin thiết bị.
         """
         if (
             not self.system_initializer
@@ -103,139 +103,139 @@ class CLIActivation:
 
         device_fp = self.system_initializer.device_fingerprint
 
-        # 获取设备信息
+        # Lấy thông tin thiết bị
         serial_number = device_fp.get_serial_number()
         mac_address = device_fp.get_mac_address_from_efuse()
 
-        # 获取激活状态
+        # Lấy trạng thái kích hoạt
         activation_status = self.system_initializer.get_activation_status()
         local_activated = activation_status.get("local_activated", False)
         server_activated = activation_status.get("server_activated", False)
         status_consistent = activation_status.get("status_consistent", True)
 
-        # 更新激活状态
+        # Cập nhật trạng thái kích hoạt
         self.is_activated = local_activated
 
-        # 显示设备信息
-        print("📱 设备信息:")
-        print(f"   序列号: {serial_number if serial_number else '--'}")
-        print(f"   MAC地址: {mac_address if mac_address else '--'}")
+        # Hiển thị thông tin thiết bị
+        print("\U0001F4F1 Thông tin thiết bị:")
+        print(f"   Số sê-ri: {serial_number if serial_number else '--'}")
+        print(f"   Địa chỉ MAC: {mac_address if mac_address else '--'}")
 
-        # 显示激活状态
+        # Hiển thị trạng thái kích hoạt
         if not status_consistent:
             if local_activated and not server_activated:
-                status_text = "状态不一致(需重新激活)"
+                status_text = "Trạng thái không nhất quán (cần kích hoạt lại)"
             else:
-                status_text = "状态不一致(已自动修复)"
+                status_text = "Trạng thái không nhất quán (đã tự động sửa chữa)"
         else:
-            status_text = "已激活" if local_activated else "未激活"
+            status_text = "Đã kích hoạt" if local_activated else "Chưa kích hoạt"
 
-        print(f"   激活状态: {status_text}")
+        print(f"   Trạng thái kích hoạt: {status_text}")
 
     async def _start_activation_process(self) -> bool:
         """
-        开始激活流程.
+        Bắt đầu quy trình kích hoạt.
         """
         try:
-            # 获取激活数据
+            # Lấy dữ liệu kích hoạt
             activation_data = self.system_initializer.get_activation_data()
 
             if not activation_data:
-                self._log_and_print("\n未获取到激活数据")
-                print("错误: 未获取到激活数据，请检查网络连接")
+                self._log_and_print("\nKhông lấy được dữ liệu kích hoạt")
+                print("Lỗi: Không lấy được dữ liệu kích hoạt, vui lòng kiểm tra kết nối mạng")
                 return False
 
             self.activation_data = activation_data
 
-            # 显示激活信息
+            # Hiển thị thông tin kích hoạt
             self._show_activation_info(activation_data)
 
-            # 初始化设备激活器
+            # Khởi tạo thiết bị kích hoạt
             config_manager = self.system_initializer.get_config_manager()
             self.device_activator = DeviceActivator(config_manager)
 
-            # 开始激活流程
-            self._log_and_print("\n开始设备激活流程...")
-            print("正在连接激活服务器，请保持网络连接...")
+            # Bắt đầu quy trình kích hoạt
+            self._log_and_print("\nBắt đầu quy trình kích hoạt thiết bị...")
+            print("Đang kết nối với máy chủ kích hoạt, vui lòng giữ kết nối mạng...")
 
             activation_success = await self.device_activator.process_activation(
                 activation_data
             )
 
             if activation_success:
-                self._log_and_print("\n设备激活成功！")
+                self._log_and_print("\nThiết bị kích hoạt thành công!")
                 self._print_activation_success()
                 return True
             else:
-                self._log_and_print("\n设备激活失败")
+                self._log_and_print("\nThiết bị kích hoạt thất bại")
                 self._print_activation_failure()
                 return False
 
         except Exception as e:
-            self.logger.error(f"激活流程异常: {e}", exc_info=True)
-            self._log_and_print(f"\n激活异常: {e}")
+            self.logger.error(f"Có ngoại lệ trong quy trình kích hoạt: {e}", exc_info=True)
+            self._log_and_print(f"\nCó ngoại lệ trong kích hoạt: {e}")
             return False
 
     def _show_activation_info(self, activation_data: dict):
         """
-        显示激活信息.
+        Hiển thị thông tin kích hoạt.
         """
         code = activation_data.get("code", "------")
-        message = activation_data.get("message", "请访问xiaozhi.me输入验证码")
+        message = activation_data.get("message", "Vui lòng truy cập xiaozhi.me nhập mã xác thực")
 
         print("\n" + "=" * 60)
-        print("设备激活信息")
+        print("Thông tin kích hoạt thiết bị")
         print("=" * 60)
-        print(f"激活验证码: {code}")
-        print(f"激活说明: {message}")
+        print(f"Mã xác thực: {code}")
+        print(f"Hướng dẫn kích hoạt: {message}")
         print("=" * 60)
 
-        # 格式化显示验证码（每个字符间加空格）
+        # Định dạng hiển thị mã xác thực (thêm khoảng trống giữa các ký tự)
         formatted_code = " ".join(code)
-        print(f"\n验证码（请在网站输入）: {formatted_code}")
-        print("\n请按以下步骤完成激活:")
-        print("1. 打开浏览器访问 xiaozhi.me")
-        print("2. 登录您的账户")
-        print("3. 选择添加设备")
-        print(f"4. 输入验证码: {formatted_code}")
-        print("5. 确认添加设备")
-        print("\n等待激活确认中，请在网站完成操作...")
+        print(f"\nMã xác thực (vui lòng nhập trên trang web): {formatted_code}")
+        print("\nVui lòng thực hiện các bước sau để hoàn thành kích hoạt:")
+        print("1. Mở trình duyệt truy cập xiaozhi.me")
+        print("2. Đăng nhập vào tài khoản của bạn")
+        print("3. Chọn thêm thiết bị")
+        print(f"4. Nhập mã xác thực: {formatted_code}")
+        print("5. Xác nhận thêm thiết bị")
+        print("\nĐang chờ xác nhận kích hoạt, vui lòng hoàn tất thao tác trên trang web...")
 
-        self._log_and_print(f"激活验证码: {code}")
-        self._log_and_print(f"激活说明: {message}")
+        self._log_and_print(f"Mã xác thực: {code}")
+        self._log_and_print(f"Hướng dẫn kích hoạt: {message}")
 
     def _print_activation_success(self):
         """
-        打印激活成功信息.
+        In thông tin kích hoạt thành công.
         """
         print("\n" + "=" * 60)
-        print("设备激活成功！")
+        print("Thiết bị kích hoạt thành công!")
         print("=" * 60)
-        print("设备已成功添加到您的账户")
-        print("配置已自动更新")
-        print("准备启动小智AI客户端...")
+        print("Thiết bị đã được thêm thành công vào tài khoản của bạn")
+        print("Cấu hình đã được cập nhật tự động")
+        print("Chuẩn bị khởi động khách hàng AI nhỏ...")
         print("=" * 60)
 
     def _print_activation_failure(self):
         """
-        打印激活失败信息.
+        In thông tin kích hoạt thất bại.
         """
         print("\n" + "=" * 60)
-        print("设备激活失败")
+        print("Thiết bị kích hoạt thất bại")
         print("=" * 60)
-        print("可能的原因:")
-        print("• 网络连接不稳定")
-        print("• 验证码输入错误或已过期")
-        print("• 服务器暂时不可用")
-        print("\n解决方案:")
-        print("• 检查网络连接")
-        print("• 重新运行程序获取新验证码")
-        print("• 确保在网站正确输入验证码")
+        print("Nguyên nhân có thể:")
+        print("• Kết nối mạng không ổn định")
+        print("• Nhập mã xác thực sai hoặc đã hết hạn")
+        print("• Máy chủ tạm thời không khả dụng")
+        print("\nGiải pháp:")
+        print("• Kiểm tra kết nối mạng")
+        print("• Chạy lại chương trình để lấy mã xác thực mới")
+        print("• Đảm bảo nhập đúng mã xác thực trên trang web")
         print("=" * 60)
 
     def _log_and_print(self, message: str):
         """
-        同时记录日志和打印到终端.
+        Ghi lại log và in ra terminal.
         """
         timestamp = datetime.now().strftime("%H:%M:%S")
         log_message = f"[{timestamp}] {message}"
@@ -244,7 +244,7 @@ class CLIActivation:
 
     def get_activation_result(self) -> dict:
         """
-        获取激活结果.
+        Lấy kết quả kích hoạt.
         """
         device_fingerprint = None
         config_manager = None

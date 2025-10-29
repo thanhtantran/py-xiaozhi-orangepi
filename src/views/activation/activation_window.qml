@@ -9,7 +9,7 @@ Rectangle {
     height: 420
     color: "transparent"
 
-    // 信号定义
+    // Định nghĩa tín hiệu
     signal copyCodeClicked()
     signal retryClicked()
     signal closeClicked()
@@ -17,13 +17,13 @@ Rectangle {
     Rectangle {
         id: mainContainer
         anchors.fill: parent
-        anchors.margins: 8  // 为阴影留出空间
+        anchors.margins: 8  // Để lại không gian cho bóng
         color: "#ffffff"
-        radius: 10  // QML圆角，提供更好的抗锯齿效果
+        radius: 10  // Góc tròn QML, cung cấp hiệu ứng chống răng cưa tốt hơn
         border.width: 0
         antialiasing: true
 
-        // 添加窗口阴影效果
+        // Thêm hiệu ứng bóng cho cửa sổ
         layer.enabled: true
         layer.effect: DropShadow {
             horizontalOffset: 0
@@ -39,13 +39,13 @@ Rectangle {
             anchors.margins: 20
             spacing: 20
 
-            // ArcoDesign 标题区域
+            // Khu vực tiêu đề ArcoDesign
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 16
 
                 Text {
-                    text: "设备激活"
+                    text: "Kích hoạt thiết bị"
                     font.family: "PingFang SC, Microsoft YaHei UI, Helvetica Neue"
                     font.pixelSize: 20
                     font.weight: Font.Medium
@@ -54,7 +54,7 @@ Rectangle {
 
                 Item { Layout.fillWidth: true }
 
-                // 激活状态显示区域
+                // Khu vực hiển thị trạng thái kích hoạt
                 RowLayout {
                     spacing: 8
 
@@ -66,22 +66,22 @@ Rectangle {
 
                         function getArcoStatusColor() {
                             var status = activationModel.activationStatus
-                            if (status === "已激活") return "#00b42a"
-                            if (status === "激活中...") return "#ff7d00"
-                            if (status.includes("不一致")) return "#f53f3f"
+                            if (status === "Đã kích hoạt") return "#00b42a"
+                            if (status === "Đang kích hoạt...") return "#ff7d00"
+                            if (status.includes("Không nhất quán")) return "#f53f3f"
                             return "#f53f3f"
                         }
                     }
 
                     Text {
-                        text: activationModel ? activationModel.activationStatus : "未激活"
+                        text: activationModel ? activationModel.activationStatus : "Chưa kích hoạt"
                         font.family: "PingFang SC, Microsoft YaHei UI"
                         font.pixelSize: 12
                         color: "#4e5969"
                     }
                 }
 
-                // 关闭按钮
+                // Nút đóng
                 Button {
                     id: windowCloseBtn
                     width: 32
@@ -94,7 +94,7 @@ Rectangle {
                         border.width: 0
                         antialiasing: true
 
-                        // 颜色过渡动效
+                        // Hiệu ứng chuyển màu
                         Behavior on color {
                             ColorAnimation {
                                 duration: 200
@@ -102,7 +102,7 @@ Rectangle {
                             }
                         }
 
-                        // 缩放动效
+                        // Hiệu ứng thu phóng
                         scale: windowCloseBtn.pressed ? 0.9 : (windowCloseBtn.hovered ? 1.1 : 1.0)
                         Behavior on scale {
                             NumberAnimation {
@@ -121,7 +121,7 @@ Rectangle {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
 
-                        // 文字颜色过渡动效
+                        // Hiệu ứng chuyển màu chữ
                         Behavior on color {
                             ColorAnimation {
                                 duration: 200
@@ -134,7 +134,7 @@ Rectangle {
                 }
             }
 
-            // ArcoDesign 设备信息卡片 - 紧凑显示
+            // Thẻ thông tin thiết bị ArcoDesign - Hiển thị gọn gàng
             Rectangle {
                 id: deviceInfoCard
                 Layout.fillWidth: true
@@ -144,7 +144,7 @@ Rectangle {
                 border.width: 0
                 antialiasing: true
 
-                // 颜色过渡动效
+                // Hiệu ứng chuyển màu
                 Behavior on color {
                     ColorAnimation {
                         duration: 200
@@ -152,7 +152,7 @@ Rectangle {
                     }
                 }
 
-                // 鼠标悬停检测
+                // Kiểm tra chuột di chuyển
                 MouseArea {
                     id: deviceInfoMouseArea
                     anchors.fill: parent
@@ -166,15 +166,15 @@ Rectangle {
                     anchors.rightMargin: 16
                     spacing: 0
 
-                    Item { Layout.fillHeight: true } // Top spacer
+                    Item { Layout.fillHeight: true } // Khoảng cách trên
 
-                    // 设备信息区域
+                    // Khu vực thông tin thiết bị
                     ColumnLayout {
                         Layout.fillWidth: true
                         spacing: 8
 
                         Text {
-                            text: "设备信息"
+                            text: "Thông tin thiết bị"
                             font.family: "PingFang SC, Microsoft YaHei UI"
                             font.pixelSize: 13
                             font.weight: Font.Medium
@@ -188,14 +188,14 @@ Rectangle {
                             rowSpacing: 6
 
                             Text {
-                                text: "设备序列号"
+                                text: "Số sê-ri thiết bị"
                                 font.family: "PingFang SC, Microsoft YaHei UI"
                                 font.pixelSize: 12
                                 color: "#86909c"
                             }
 
                             Text {
-                                text: "MAC地址"
+                                text: "Địa chỉ MAC"
                                 font.family: "PingFang SC, Microsoft YaHei UI"
                                 font.pixelSize: 12
                                 color: "#86909c"
@@ -217,11 +217,11 @@ Rectangle {
                         }
                     }
 
-                    Item { Layout.fillHeight: true } // Bottom spacer
+                    Item { Layout.fillHeight: true } // Khoảng cách dưới
                 }
             }
 
-            // ArcoDesign 激活验证码卡片 - 一行显示
+            // Thẻ mã xác thực ArcoDesign - Hiển thị một dòng
             Rectangle {
                 id: activationCodeCard
                 Layout.fillWidth: true
@@ -231,7 +231,7 @@ Rectangle {
                 border.width: 0
                 antialiasing: true
 
-                // 颜色过渡动效
+                // Hiệu ứng chuyển màu
                 Behavior on color {
                     ColorAnimation {
                         duration: 200
@@ -239,7 +239,7 @@ Rectangle {
                     }
                 }
 
-                // 鼠标悬停检测
+                // Kiểm tra chuột di chuyển
                 MouseArea {
                     id: activationCodeMouseArea
                     anchors.fill: parent
@@ -254,7 +254,7 @@ Rectangle {
                     spacing: 16
 
                     Text {
-                        text: "激活验证码"
+                        text: "Mã xác thực"
                         font.family: "PingFang SC, Microsoft YaHei UI"
                         font.pixelSize: 13
                         font.weight: Font.Medium
@@ -283,7 +283,7 @@ Rectangle {
 
                     Button {
                         id: copyCodeBtn
-                        text: "复制"
+                        text: "Sao chép"
                         Layout.preferredWidth: 80
                         height: 36
 
@@ -294,7 +294,7 @@ Rectangle {
                             border.width: 0
                             antialiasing: true
 
-                            // 颜色过渡动效
+                            // Hiệu ứng chuyển màu
                             Behavior on color {
                                 ColorAnimation {
                                     duration: 200
@@ -302,7 +302,7 @@ Rectangle {
                                 }
                             }
 
-                            // 缩放动效
+                            // Hiệu ứng thu phóng
                             scale: copyCodeBtn.pressed ? 0.95 : (copyCodeBtn.hovered ? 1.05 : 1.0)
                             Behavior on scale {
                                 NumberAnimation {
@@ -321,7 +321,7 @@ Rectangle {
                 }
             }
 
-            // ArcoDesign 按钮区域
+            // Khu vực nút ArcoDesign
             RowLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
@@ -329,7 +329,7 @@ Rectangle {
 
                 Button {
                     id: retryBtn
-                    text: "跳转激活"
+                    text: "Chuyển hướng kích hoạt"
                     Layout.fillWidth: true
                     Layout.preferredHeight: 36
 
@@ -340,7 +340,7 @@ Rectangle {
                         border.width: 0
                         antialiasing: true
 
-                        // 颜色过渡动效
+                        // Hiệu ứng chuyển màu
                         Behavior on color {
                             ColorAnimation {
                                 duration: 200
@@ -348,7 +348,7 @@ Rectangle {
                             }
                         }
 
-                        // 缩放动效
+                        // Hiệu ứng thu phóng
                         scale: retryBtn.pressed ? 0.98 : (retryBtn.hovered ? 1.02 : 1.0)
                         Behavior on scale {
                             NumberAnimation {
@@ -357,7 +357,7 @@ Rectangle {
                             }
                         }
 
-                        // 添加微妙阴影
+                        // Thêm bóng nhẹ
                         layer.enabled: true
                         layer.effect: DropShadow {
                             horizontalOffset: 0

@@ -4,7 +4,7 @@ import threading
 from pathlib import Path
 from typing import Any, Awaitable
 
-# 允许作为脚本直接运行：把项目根目录加入 sys.path（src 的上一级）
+# Cho phép chạy trực tiếp như một script: thêm thư mục gốc của dự án vào sys.path (trên cùng src)
 try:
     project_root = Path(__file__).resolve().parents[1]
     if str(project_root) not in sys.path:
@@ -44,20 +44,20 @@ class Application:
 
     def __init__(self):
         if Application._instance is not None:
-            logger.error("尝试创建Application的多个实例")
-            raise Exception("Application是单例类，请使用get_instance()获取实例")
+            logger.error("Cố gắng tạo nhiều thể hiện của Application")
+            raise Exception("Application là lớp singleton, vui lòng sử dụng get_instance() để lấy thể hiện")
         Application._instance = self
 
-        logger.debug("初始化Application实例")
+        logger.debug("Khởi tạo thể hiện Application")
 
-        # 配置
+        # Cấu hình
         self.config = ConfigManager.get_instance()
 
-        # 状态
+        # Trạng thái
         self.running = False
         self.protocol = None
 
-        # 设备状态（仅主程序改写，插件只读）
+        # Trạng thái thiết bị (chỉ chương trình chính có thể sửa đổi, plugin chỉ đọc)
         self.device_state = DeviceState.IDLE
         try:
             aec_enabled_cfg = bool(self.config.get_config("AEC_OPTIONS.ENABLED", True))
@@ -69,37 +69,37 @@ class Application:
         )
         self.keep_listening = False
 
-        # 统一任务池（替代 _main_tasks/_bg_tasks）
+        # Tập hợp nhiệm vụ đồng nhất (thay thế _main_tasks/_bg_tasks)
         self._tasks: set[asyncio.Task] = set()
 
-        # 关停事件
+        # Sự kiện dừng
         self._shutdown_event: asyncio.Event | None = None
 
-        # 事件循环
+        # Vòng lặp sự kiện
         self._main_loop: asyncio.AbstractEventLoop | None = None
 
-        # 并发控制
+        # Kiểm soát đồng thời
         self._state_lock: asyncio.Lock | None = None
         self._connect_lock: asyncio.Lock | None = None
 
-        # 插件
+        # Plugin
         self.plugins = PluginManager()
 
     # -------------------------
-    # 生命周期
+    # Vòng đời
     # -------------------------
     async def run(self, *, protocol: str = "websocket", mode: str = "gui") -> int:
-        logger.info("启动Application，protocol=%s", protocol)
+        logger.info("Khởi động Application, protocol=%s", protocol)
         try:
             self.running = True
             self._main_loop = asyncio.get_running_loop()
             self._initialize_async_objects()
             self._set_protocol(protocol)
             self._setup_protocol_callbacks()
-            # 插件：setup（延迟导入AudioPlugin，确保上面setup_opus已执行）
+            # Plugin: setup (hoãn nhập AudioPlugin, đảm bảo setup_opus đã thực thi)
             from src.plugins.audio import AudioPlugin
 
-            # 注册音频、UI、MCP、IoT、唤醒词、快捷键与日程插件（UI模式从run参数传入）
+            # Đăng ký plugin âm thanh, UI, MCP, IoT, từ khóa đánh thức, phím tắt và lịch (chế độ UI từ tham số run)
             self.plugins.register(
                 McpPlugin(),
                 IoTPlugin(),
@@ -110,44 +110,44 @@ class Application:
                 ShortcutsPlugin(),
             )
             await self.plugins.setup_all(self)
-            # 启动后广播初始状态，确保 UI 就绪时能看到“待命”
+            # Sau khi khởi động, phát sóng trạng thái ban đầu, đảm bảo UI sẵn sàng thấy "Đang chờ"
             try:
                 await self.plugins.notify_device_state_changed(self.device_state)
             except Exception:
                 pass
             # await self.connect_protocol()
-            # 插件：start
+            # Plugin: start
             await self.plugins.start_all()
-            # 等待关停
+            # Chờ dừng
             await self._wait_shutdown()
             return 0
 
         except Exception as e:
-            logger.error(f"应用运行失败: {e}", exc_info=True)
+            logger.error(f"Chạy ứng dụng thất bại: {e}", exc_info=True)
             return 1
         finally:
             try:
                 await self.shutdown()
             except Exception as e:
-                logger.error(f"关闭应用时出错: {e}")
+                logger.error(f"Lỗi khi đóng ứng dụng: {e}")
 
     async def connect_protocol(self):
         """
-        确保协议通道打开并广播一次协议就绪。返回是否已打开。
+        Đảm bảo kênh giao thức được mở và phát sóng một lần trạng thái kênh đã sẵn sàng. Trả về liệu có mở hay không.
         """
-        # 已打开直接返回
+        # Nếu đã mở thì trả về ngay
         try:
             if self.is_audio_channel_opened():
                 return True
             if not self._connect_lock:
-                # 未初始化锁时，直接尝试一次
+                # Nếu chưa khởi tạo khóa, thử một lần
                 opened = await asyncio.wait_for(
                     self.protocol.open_audio_channel(), timeout=12.0
                 )
                 if not opened:
-                    logger.error("协议连接失败")
+                    logger.error("Kết nối giao thức thất bại")
                     return False
-                logger.info("协议连接已建立，按Ctrl+C退出")
+                logger.info("Kết nối giao thức đã được thiết lập, nhấn Ctrl+C để thoát")
                 await self.plugins.notify_protocol_connected(self.protocol)
                 return True
 
@@ -158,30 +158,30 @@ class Application:
                     self.protocol.open_audio_channel(), timeout=12.0
                 )
                 if not opened:
-                    logger.error("协议连接失败")
+                    logger.error("Kết nối giao thức thất bại")
                     return False
-                logger.info("协议连接已建立，按Ctrl+C退出")
+                logger.info("Kết nối giao thức đã được thiết lập, nhấn Ctrl+C để thoát")
                 await self.plugins.notify_protocol_connected(self.protocol)
                 return True
         except asyncio.TimeoutError:
-            logger.error("协议连接超时")
+            logger.error("Kết nối giao thức bị timeout")
             return False
 
     def _initialize_async_objects(self) -> None:
-        logger.debug("初始化异步对象")
+        logger.debug("Khởi tạo đối tượng bất đồng bộ")
         self._shutdown_event = asyncio.Event()
         self._state_lock = asyncio.Lock()
         self._connect_lock = asyncio.Lock()
 
     def _set_protocol(self, protocol_type: str) -> None:
-        logger.debug("设置协议类型: %s", protocol_type)
+        logger.debug("Thiết lập loại giao thức: %s", protocol_type)
         if protocol_type == "mqtt":
             self.protocol = MqttProtocol(asyncio.get_running_loop())
         else:
             self.protocol = WebsocketProtocol()
 
     # -------------------------
-    # 手动聆听（按住说话）
+    # Nghe thủ công (giữ để nói)
     # -------------------------
     async def start_listening_manual(self) -> None:
         try:
@@ -190,9 +190,9 @@ class Application:
                 return
             self.keep_listening = False
 
-            # 如果说话中发送打断
+            # Nếu đang nói thì gửi yêu cầu ngắt
             if self.device_state == DeviceState.SPEAKING:
-                logger.info("说话中发送打断")
+                logger.info("Gửi yêu cầu ngắt khi đang nói")
                 await self.protocol.send_abort_speaking(None)
                 await self.set_device_state(DeviceState.IDLE)
             await self.protocol.send_start_listening(ListeningMode.MANUAL)
@@ -208,7 +208,7 @@ class Application:
             pass
 
     # -------------------------
-    # 自动/实时对话：根据 AEC 与当前配置选择模式，开启保持会话
+    # Đối thoại tự động/thực thời: chọn chế độ dựa trên AEC và cấu hình hiện tại, mở giữ phiên
     # -------------------------
     async def start_auto_conversation(self) -> None:
         try:
@@ -237,14 +237,14 @@ class Application:
         await self._shutdown_event.wait()
 
     # -------------------------
-    # 统一任务管理（精简）
+    # Quản lý nhiệm vụ đồng nhất (tinh gọn)
     # -------------------------
     def spawn(self, coro: Awaitable[Any], name: str) -> asyncio.Task:
         """
-        创建任务并登记，关停时统一取消。
+        Tạo nhiệm vụ và đăng ký, hủy bỏ khi dừng.
         """
         if not self.running or (self._shutdown_event and self._shutdown_event.is_set()):
-            logger.debug(f"跳过任务创建（应用正在关闭）: {name}")
+            logger.debug(f"Bỏ qua việc tạo nhiệm vụ (ứng dụng đang đóng): {name}")
             return None
         task = asyncio.create_task(coro, name=name)
         self._tasks.add(task)
@@ -252,19 +252,19 @@ class Application:
         def _done(t: asyncio.Task):
             self._tasks.discard(t)
             if not t.cancelled() and t.exception():
-                logger.error(f"任务 {name} 异常结束: {t.exception()}", exc_info=True)
+                logger.error(f"Nhiệm vụ {name} kết thúc với ngoại lệ: {t.exception()}", exc_info=True)
 
         task.add_done_callback(_done)
         return task
 
     def schedule_command_nowait(self, fn, *args, **kwargs) -> None:
-        """简化的“立即调度”：把任意可调用丢回主loop执行。
+        """Lên lịch "ngay lập tức": đưa bất kỳ callable nào trở lại vòng lặp chính để thực thi.
 
-        - 若返回协程，会被自动创建子任务执行（fire-and-forget）。
-        - 若是同步函数，直接在事件循环线程里运行（尽量保持轻量）。
+        - Nếu trả về coroutine, nó sẽ được tự động tạo nhiệm vụ con để thực thi (fire-and-forget).
+        - Nếu là hàm đồng bộ, nó sẽ chạy trực tiếp trong luồng vòng lặp sự kiện (cố gắng giữ nhẹ).
         """
         if not self._main_loop or self._main_loop.is_closed():
-            logger.warning("主事件循环未就绪，拒绝调度")
+            logger.warning("Vòng lặp sự kiện chính chưa sẵn sàng, từ chối lên lịch")
             return
 
         def _runner():
@@ -273,37 +273,37 @@ class Application:
                 if asyncio.iscoroutine(res):
                     self.spawn(res, name=f"call:{getattr(fn, '__name__', 'anon')}")
             except Exception as e:
-                logger.error(f"调度的可调用执行失败: {e}", exc_info=True)
+                logger.error(f"Thực thi callable được lên lịch thất bại: {e}", exc_info=True)
 
-        # 确保在事件循环线程里执行
+        # Đảm bảo thực thi trong luồng vòng lặp sự kiện
         self._main_loop.call_soon_threadsafe(_runner)
 
     # -------------------------
-    # 协议回调
+    # Callback giao thức
     # -------------------------
     def _on_network_error(self, error_message=None):
         if error_message:
             logger.error(error_message)
 
         self.keep_listening = False
-        # 出错即请求关闭
+        # Lỗi thì yêu cầu đóng
         # if self._shutdown_event and not self._shutdown_event.is_set():
         #     self._shutdown_event.set()
 
     def _on_incoming_audio(self, data: bytes):
-        logger.debug(f"收到二进制消息，长度: {len(data)}")
-        # 转发给插件
+        logger.debug(f"Nhận tin nhắn nhị phân, độ dài: {len(data)}")
+        # Chuyển tiếp cho plugin
         self.spawn(self.plugins.notify_incoming_audio(data), "plugin:on_audio")
 
     def _on_incoming_json(self, json_data):
         try:
             msg_type = json_data.get("type") if isinstance(json_data, dict) else None
-            logger.info(f"收到JSON消息: type={msg_type}")
-            # 将 TTS start/stop 映射为设备状态（支持自动/实时，且不污染手动模式）
+            logger.info(f"Nhận tin nhắn JSON: type={msg_type}")
+            # Chuyển đổi TTS start/stop thành trạng thái thiết bị (hỗ trợ tự động/thực thời, không làm ô nhiễm chế độ thủ công)
             if msg_type == "tts":
                 state = json_data.get("state")
                 if state == "start":
-                    # 仅当保持会话且实时模式时，TTS开始期间保持LISTENING；否则显示SPEAKING
+                    # Chỉ khi giữ phiên và ở chế độ thực thời, trong thời gian TTS bắt đầu thì giữ LISTENING; nếu không thì hiển thị SPEAKING
                     if (
                         self.keep_listening
                         and self.listening_mode == ListeningMode.REALTIME
@@ -319,10 +319,10 @@ class Application:
                         )
                 elif state == "stop":
                     if self.keep_listening:
-                        # 继续对话：根据当前模式重启监听
+                        # Tiếp tục đối thoại: khởi động lại nghe dựa trên chế độ hiện tại
                         async def _restart_listening():
                             try:
-                                # REALTIME 且已在 LISTENING 时无需重复发送
+                                # REALTIME và đã ở LISTENING thì không cần gửi lại
                                 if not (
                                     self.listening_mode == ListeningMode.REALTIME
                                     and self.device_state == DeviceState.LISTENING
@@ -342,24 +342,24 @@ class Application:
                             self.set_device_state(DeviceState.IDLE),
                             "state:tts_stop_idle",
                         )
-            # 转发给插件
+            # Chuyển tiếp cho plugin
             self.spawn(self.plugins.notify_incoming_json(json_data), "plugin:on_json")
         except Exception:
-            logger.info("收到JSON消息")
+            logger.info("Nhận tin nhắn JSON")
 
     async def _on_audio_channel_opened(self):
-        logger.info("协议通道已打开")
-        # 通道打开后进入 LISTENING（：简化为直读直写）
+        logger.info("Kênh giao thức đã mở")
+        # Sau khi kênh mở vào LISTENING (đơn giản hóa thành đọc và ghi trực tiếp)
         await self.set_device_state(DeviceState.LISTENING)
 
     async def _on_audio_channel_closed(self):
-        logger.info("协议通道已关闭")
-        # 通道关闭回到 IDLE
+        logger.info("Kênh giao thức đã đóng")
+        # Sau khi kênh đóng quay về IDLE
         await self.set_device_state(DeviceState.IDLE)
 
     async def set_device_state(self, state: DeviceState):
         """
-        仅供主程序内部调用：设置设备状态。插件请只读获取。
+        Chỉ dành cho gọi nội bộ của chương trình chính: thiết lập trạng thái thiết bị. Plugin chỉ có thể đọc.
         """
         # print(f"set_device_state: {state}")
         if not self._state_lock:
@@ -372,9 +372,9 @@ class Application:
         async with self._state_lock:
             if self.device_state == state:
                 return
-            logger.info(f"设置设备状态: {state}")
+            logger.info(f"Thiết lập trạng thái thiết bị: {state}")
             self.device_state = state
-        # 锁外广播，避免插件回调引起潜在的长耗时阻塞
+        # Phát sóng bên ngoài khóa, tránh callback plugin gây tắc nghẽn lâu dài
         try:
             await self.plugins.notify_device_state_changed(state)
             if state == DeviceState.LISTENING:
@@ -384,7 +384,7 @@ class Application:
             pass
 
     # -------------------------
-    # 只读访问器（提供给插件使用）
+    # Truy cập chỉ đọc (cung cấp cho plugin sử dụng)
     # -------------------------
     def get_device_state(self):
         return self.device_state
@@ -420,54 +420,54 @@ class Application:
 
     async def abort_speaking(self, reason):
         """
-        中止语音输出.
+        Ngừng phát âm thanh.
         """
 
         if self.aborted:
-            logger.debug(f"已经中止，忽略重复的中止请求: {reason}")
+            logger.debug(f"Đã ngừng, bỏ qua yêu cầu ngừng lặp lại: {reason}")
             return
 
-        logger.info(f"中止语音输出，原因: {reason}")
+        logger.info(f"Ngừng phát âm thanh, lý do: {reason}")
         self.aborted = True
         await self.protocol.send_abort_speaking(reason)
         await self.set_device_state(DeviceState.IDLE)
 
     # -------------------------
-    # UI 辅助：供插件或工具直接调用
+    # Hỗ trợ UI: cho phép plugin hoặc công cụ gọi trực tiếp
     # -------------------------
     def set_chat_message(self, role, message: str) -> None:
-        """将文本更新转发为 UI 可识别的 JSON 消息（复用 UIPlugin 的 on_incoming_json）。
-        role: "assistant" | "user" 影响消息类型映射。
+        """Chuyển đổi cập nhật văn bản thành tin nhắn JSON mà UI có thể nhận biết (tái sử dụng on_incoming_json của UIPlugin).
+        role: "assistant" | "user" ảnh hưởng đến ánh xạ loại tin nhắn.
         """
         try:
             msg_type = "tts" if str(role).lower() == "assistant" else "stt"
         except Exception:
             msg_type = "tts"
         payload = {"type": msg_type, "text": message}
-        # 通过插件事件总线异步派发
+        # Phát sóng bất đồng bộ qua bus sự kiện plugin
         self.spawn(self.plugins.notify_incoming_json(payload), "ui:text_update")
 
     def set_emotion(self, emotion: str) -> None:
         """
-        设置情绪表情：通过 UIPlugin 的 on_incoming_json 路由。
+        Thiết lập cảm xúc: thông qua on_incoming_json của UIPlugin.
         """
         payload = {"type": "llm", "emotion": emotion}
         self.spawn(self.plugins.notify_incoming_json(payload), "ui:emotion_update")
 
     # -------------------------
-    # 关停
+    # Dừng
     # -------------------------
     async def shutdown(self):
         if not self.running:
             return
-        logger.info("正在关闭Application...")
+        logger.info("Đang đóng Application...")
         self.running = False
 
         if self._shutdown_event is not None:
             self._shutdown_event.set()
 
         try:
-            # 取消所有登记任务
+            # Hủy tất cả nhiệm vụ đã đăng ký
             if self._tasks:
                 for t in list(self._tasks):
                     if not t.done():
@@ -475,17 +475,17 @@ class Application:
                 await asyncio.gather(*self._tasks, return_exceptions=True)
                 self._tasks.clear()
 
-            # 关闭协议（限时，避免阻塞退出）
+            # Đóng giao thức (có thời gian giới hạn, tránh chặn thoát)
             if self.protocol:
                 try:
                     try:
                         self._main_loop.create_task(self.protocol.close_audio_channel())
                     except asyncio.TimeoutError:
-                        logger.warning("关闭协议超时，跳过等待")
+                        logger.warning("Đóng giao thức bị timeout, bỏ qua chờ đợi")
                 except Exception as e:
-                    logger.error(f"关闭协议失败: {e}")
+                    logger.error(f"Đóng giao thức thất bại: {e}")
 
-            # 插件：stop/shutdown
+            # Plugin: stop/shutdown
             try:
                 await self.plugins.stop_all()
             except Exception:
@@ -495,6 +495,6 @@ class Application:
             except Exception:
                 pass
 
-            logger.info("Application 关闭完成")
+            logger.info("Đóng Application hoàn tất")
         except Exception as e:
-            logger.error(f"关闭应用时出错: {e}", exc_info=True)
+            logger.error(f"Lỗi khi đóng ứng dụng: {e}", exc_info=True)
