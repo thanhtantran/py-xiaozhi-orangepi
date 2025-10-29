@@ -13,7 +13,7 @@ def parse_args():
     """
     Phân tích tham số dòng lệnh.
     """
-    parser = argparse.ArgumentParser(description="Khách hàng AI Xiaozhi")
+    parser = argparse.ArgumentParser(description="Client AI Xiaozhi")
     parser.add_argument(
         "--mode",
         choices=["gui", "cli"],
@@ -63,7 +63,7 @@ async def start_app(mode: str, protocol: str, skip_activation: bool) -> int:
     """
     Điểm khởi đầu chung để chạy ứng dụng (thực hiện trong vòng lặp sự kiện hiện có).
     """
-    logger.info("Khởi chạy khách hàng AI Xiaozhi")
+    logger.info("Khởi chạy AI Xiaozhi")
 
     # Xử lý quy trình kích hoạt 
     # nếu không bỏ qua quy trình kích hoạt:

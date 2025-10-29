@@ -1,4 +1,3 @@
-# 系统常量定义
 from enum import Enum
 
 

@@ -219,7 +219,7 @@ class GuiDisplay(BaseDisplay, QObject, metaclass=CombinedMeta):
             raise RuntimeError("QApplication không tìm thấy, hãy đảm bảo chạy trong môi trường qasync")
 
         self.app.setQuitOnLastWindowClosed(False)
-        self.app.setFont(QFont("PingFang SC", self.DEFAULT_FONT_SIZE))
+        self.app.setFont(QFont("Tahoma, Arial", self.DEFAULT_FONT_SIZE))
 
         self._setup_signal_handlers()
         self._setup_activation_handler()

@@ -121,7 +121,7 @@ Rectangle {
                     Text {
                         anchors.centerIn: parent
                         text: displayModel ? displayModel.statusText : "Trạng thái: Chưa kết nối"
-                        font.family: "PingFang SC, Microsoft YaHei UI"
+                        font.family: "Tahoma, Arial"
                         font.pixelSize: 14
                         font.weight: Font.Bold
                         color: "#2196F3"
@@ -214,7 +214,7 @@ Rectangle {
                         anchors.fill: parent
                         anchors.margins: 15
                         text: displayModel ? displayModel.ttsText : "Đang chờ"
-                        font.family: "PingFang SC, Microsoft YaHei UI"
+                        font.family: "Tahoma, Arial"
                         font.pixelSize: 14
                         color: "#555555"
                         horizontalAlignment: Text.AlignHCenter
@@ -255,7 +255,7 @@ Rectangle {
 
                     contentItem: Text {
                         text: manualBtn.text
-                        font.family: "PingFang SC, Microsoft YaHei UI"
+                        font.family: "Tahoma, Arial"
                         font.pixelSize: 13
                         color: "white"
                         horizontalAlignment: Text.AlignHCenter
@@ -280,7 +280,7 @@ Rectangle {
                         Behavior on color { ColorAnimation { duration: 120; easing.type: Easing.OutCubic } }
                     }
 
-                    contentItem: Text { text: autoBtn.text; font.family: "PingFang SC, Microsoft YaHei UI"; font.pixelSize: 13; color: "white"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                    contentItem: Text { text: autoBtn.text; font.family: "Tahoma, Arial"; font.pixelSize: 13; color: "white"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                     onClicked: root.autoButtonClicked()
                 }
 
@@ -292,7 +292,7 @@ Rectangle {
                     text: "Hủy đối thoại"
 
                     background: Rectangle { color: abortBtn.pressed ? "#e5e6eb" : (abortBtn.hovered ? "#f2f3f5" : "#eceff3"); radius: 8 }
-                    contentItem: Text { text: abortBtn.text; font.family: "PingFang SC, Microsoft YaHei UI"; font.pixelSize: 13; color: "#1d2129"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                    contentItem: Text { text: abortBtn.text; font.family: "Tahoma, Arial"; font.pixelSize: 13; color: "#1d2129"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                     onClicked: root.abortButtonClicked()
                 }
 
@@ -316,7 +316,7 @@ Rectangle {
                             anchors.leftMargin: 12
                             anchors.rightMargin: 12
                             verticalAlignment: TextInput.AlignVCenter
-                            font.family: "PingFang SC, Microsoft YaHei UI"
+                            font.family: "Tahoma, Arial"
                             font.pixelSize: 13
                             color: "#333333"
                             selectByMouse: true
@@ -335,7 +335,7 @@ Rectangle {
                         Layout.preferredHeight: 40
                         text: "Gửi"
                         background: Rectangle { color: sendBtn.pressed ? "#0e42d2" : (sendBtn.hovered ? "#4080ff" : "#165dff"); radius: 8 }
-                        contentItem: Text { text: sendBtn.text; font.family: "PingFang SC, Microsoft YaHei UI"; font.pixelSize: 13; color: "white"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                        contentItem: Text { text: sendBtn.text; font.family: "Tahoma, Arial"; font.pixelSize: 13; color: "white"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                         onClicked: { if (textInput.text.trim().length > 0) { root.sendButtonClicked(textInput.text); textInput.text = "" } }
                     }
                 }
@@ -347,7 +347,7 @@ Rectangle {
                     Layout.preferredHeight: 40
                     text: displayModel ? displayModel.modeText : "Đối thoại thủ công"
                     background: Rectangle { color: modeBtn.pressed ? "#e5e6eb" : (modeBtn.hovered ? "#f2f3f5" : "#eceff3"); radius: 8 }
-                    contentItem: Text { text: modeBtn.text; font.family: "PingFang SC, Microsoft YaHei UI"; font.pixelSize: 13; color: "#1d2129"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                    contentItem: Text { text: modeBtn.text; font.family: "Tahoma, Arial"; font.pixelSize: 13; color: "#1d2129"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                     onClicked: root.modeButtonClicked()
                 }
 
@@ -358,7 +358,7 @@ Rectangle {
                     Layout.preferredHeight: 40
                     text: "Cấu hình tham số"
                     background: Rectangle { color: settingsBtn.pressed ? "#e5e6eb" : (settingsBtn.hovered ? "#f2f3f5" : "#eceff3"); radius: 8 }
-                    contentItem: Text { text: settingsBtn.text; font.family: "PingFang SC, Microsoft YaHei UI"; font.pixelSize: 13; color: "#1d2129"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                    contentItem: Text { text: settingsBtn.text; font.family: "Tahoma, Arial"; font.pixelSize: 13; color: "#1d2129"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                     onClicked: root.settingsButtonClicked()
                 }
             }
