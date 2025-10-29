@@ -4,18 +4,18 @@ from enum import Enum
 
 class InitializationStage(Enum):
     """
-    初始化阶段枚举.
+    De phan nay tieng Anh cho de hieu
     """
 
-    DEVICE_FINGERPRINT = "第一阶段：设备身份准备"
-    CONFIG_MANAGEMENT = "第二阶段：配置管理初始化"
-    OTA_CONFIG = "第三阶段：OTA获取配置"
-    ACTIVATION = "第四阶段：激活流程"
+    DEVICE_FINGERPRINT = "Phase 1: Device Identity Preparation"
+    CONFIG_MANAGEMENT = "Phase 2: Configuration Management Initialization"
+    OTA_CONFIG = "Phase 3: OTA Configuration Acquisition"
+    ACTIVATION = "Phase 4: Activation Process"
 
 
 class SystemConstants:
     """
-    系统常量.
+   System constants.
     """
 
     # 应用信息
