@@ -61,7 +61,7 @@ sudo add-apt-repository multiverse
 sudo apt update
 
 # Cài các công cụ Python nếu chưa có
-sudo apt install python3-dev python3-pip python3-venv -y
+sudo apt install python3-dev python3-pip python3-venv python3-evdev -y
 
 # Cài PyQT system-based
 sudo apt install python3-pyqt5 python3-pyqt5.* -y
