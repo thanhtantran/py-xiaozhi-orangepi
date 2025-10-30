@@ -21,7 +21,7 @@
 
 ### Các thiết bị hỗ trợ
 
-- Các phiên bản Orange Pi ARM64 có xuất hình ra HDMI như Orange Pi 3B, Orange Pi 4A, Orange Pi Zero3, Orange Pi 4 LTS, Orange Pi 5 ... đều dùng được
+- Các phiên bản Orange Pi ARM64 có xuất hình ra HDMI như Orange Pi 3B, Orange Pi 4A, Orange Pi Zero3, Orange Pi 4 LTS, Orange Pi 5 ... đều dùng được. Nếu cần hỗ trợ hãy sử dụng [Diễn đàn Orange Pi](https://forum.orangepi.vn)
 - Các phiên bản Pi khác như Raspberry Pi, Banana Pi, Rice Pi, ... cũng có thể dùng được, nhưng không chắc chắn, và tôi không hỗ trợ.
 
 ## Yêu cầu hệ thống
@@ -31,20 +31,20 @@
 - **Python Version**: 3.9 - 3.12
 - **Operating System**: Ubuntu / Debian
 - **Audio Devices**: Microphone and speaker devices
-- **Network Connection**: Internet ổn định (để kết nối đến Xiaozhi.me)
+- **Network Connection**: Internet ổn định (để kết nối đến Xiaozhi.me và cài đặt)
 
 ### Yêu cầu cấu hình
 
-- **Memory**: At least 4GB RAM (8GB+ recommended)
+- **Memory**: At least 2GB RAM (4GB+ recommended)
 - **Processor**: ARM64 SoC như Rockchip, Allwinner
 - **Storage**: Ít nhất 2GB ổ đĩa (for model files and cache)
-- **Audio**: Audio devices supporting 16kHz sampling rate
+- **Audio**: Có đầu ra và đầu vào Audio như cổng 3.5 hay mic built-in
 
 ### Các yêu cầu khác
 
-- **Voice Wake-up**: Requires downloading Sherpa-ONNX speech recognition models
-- **Camera Features**: Requires camera device and OpenCV support
-
+- **Voice Wake-up**: Cần tải về model Sherpa-ONNX speech recognition (sẽ cập nhật sau)
+- **Camera Features**: Cần có camera và OpenCV (sẽ cập nhật sau)
+  
 ## Hướng dẫn sử dụng
 
 ### Hướng dẫn sử dụng cơ bản
