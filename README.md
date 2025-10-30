@@ -11,7 +11,7 @@
 - Nếu bạn thấy mã nguồn này hữu ích, hãy Star cho mã nguồn, và ghé qua [Orange Pi Việt Nam](https://orangepi.vn) mua hàng ủng hộ.
 
 ## Demo
-
+- [Video demo](https://www.youtube.com/watch?v=7VbDfNjVpE4) (Vietnames only)
 - [Video hướng dẫn cài đặt](https://www.youtube.com) (Vietnames only)
 
 ## Các tính năng
