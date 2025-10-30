@@ -4,7 +4,7 @@
 
 ## Giới thiệu
 
-- Bản chỉnh sửa Python-based Xiaozhi AI cho ai muốn thử nghiệm Xiaozhi AI trên các thiết bị Orange Pi, có thể chạy song song cùng các MCP Server.
+- Bản chỉnh sửa Python-based Xiaozhi AI cho ai muốn thử nghiệm Xiaozhi AI trên các thiết bị Orange Pi, có thể chạy song song cùng các MCP Server trên cùng 1 chiếc Orange Pi, hoặc Home Assistant, v.v
 - Bản chỉnh sửa này lấy gốc từ [py-xiaozhi](https://github.com/huangjunsen0406/py-xiaozhi), lược bỏ các phần không cần thiết chỉ để chạy trên Orange Pi.
 - Nếu bạn cần một bản chạy trên tất cả các thiết bị PC, MAC, v.v. thì hãy dùng bản gốc.
 - Phiên này này dùng GNU Lesser General Public License v2.1, nghĩa là nếu bạn sử dụng mã nguồn này, bạn chỉ được phép phân phối miễn phí cho người khác, mà không được bán.
