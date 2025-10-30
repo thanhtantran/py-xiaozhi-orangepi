@@ -11,7 +11,7 @@
 - If you find this project useful, please give it a **Star**, and consider visiting [Orange Pi Vietnam](https://orangepi.vn) to support by purchasing products.
 
 ## Demo
-- Video demo (Vietnames only)
+- [Video demo](https://www.youtube.com/watch?v=7VbDfNjVpE4) (Vietnames only)
 - [Installation Tutorial Video](https://www.youtube.com) (Vietnamese only)
 
 ## Features
